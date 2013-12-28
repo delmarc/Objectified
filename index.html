@@ -1,9 +1,52 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <title>Objectified</title>
-  </head>
-  <body>
+	<head>
+		<title>Objectified</title>
+	</head>
+	<body>
+		<noscript>This page needs a little bit of JavaScript</noscript>
 
-  </body>
+		<script>
+			var sometemplate = {
+				"childNodes":[
+					{
+						"tag" : "header",
+						"attributes":{
+							"className" : "someClass",
+							"id" : "aheaderid",
+							"data-popoman" : "yeaman"
+						},
+						"childNodes": [
+							{
+								"tag" : "p",
+								"className" : "someClass",
+								"id" : "aheaderid",
+								"data" : "foo"
+							}
+						]
+					},
+					"popoman"
+					,{
+						"tag" : "article",
+						"attributes":{
+							"className" : "anArticle someContainer",
+							"id" : "anarticleid"
+						}
+					},{
+						"tag" : "footer",
+						"attributes":{
+							"className" : "a footer someClass",
+							"id" : "afooterid"
+						}
+					}
+				]
+			};
+			var somedata = {
+				"foo" : "pa"
+			}
+		</script>
+
+		<script type="text/javascript" src="Objectified.js"></script>
+		<script>Objectified.render(sometemplate,somedata)</script>
+	</body>
 </html>
