@@ -2,7 +2,7 @@ Objectified
 ===========
 
 ###### Objectified was started 12/27/13
-###### Current version - 0.0.0 - 12/27/13
+###### Current version - 0.0.1 - 12/28/13
 
 Why???
 ------
