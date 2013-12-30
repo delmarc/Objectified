@@ -4,11 +4,23 @@
 		<title>Objectified</title>
 	</head>
 	<body>
-		<noscript>This page needs a little bit of JavaScript</noscript>
 
+		<script type="text/javascript" src="Objectified.js"></script>
 		<script>
 			var sometemplate = {
-				"childNodes":[
+				/* was nice but going too crazy with this...
+				"headChildNodes":[
+					{
+						"tag" : "link",
+						"attributes":{
+							"rel" : "stylesheet",
+							"type" : "text/css", 
+							"href" : "css/main.css"
+						}
+					}
+				],
+				*/
+				"childNodes": [
 					{
 						"tag" : "header",
 						"attributes":{
@@ -37,16 +49,26 @@
 						"attributes":{
 							"className" : "a footer someClass",
 							"id" : "afooterid"
-						}
+						},
+						"childNodes": [
+							{
+								"tag" : "ul",
+								"childNodes": [
+									{
+										"tag" : "li"
+									}
+								]
+							}
+						]
 					}
 				]
 			};
 			var somedata = {
-				"foo" : "pa"
-			}
+				"foo" : "pa",
+				"lis" : []
+			};
+			Objectified.render(sometemplate,somedata)
 		</script>
 
-		<script type="text/javascript" src="Objectified.js"></script>
-		<script>Objectified.render(sometemplate,somedata)</script>
 	</body>
 </html>

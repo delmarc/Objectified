@@ -73,7 +73,7 @@
 		}
 	}
 
-	function render(JSONtemplate,JSONdata,whereToPlaceIt){
+	function render(JSONtemplate, JSONdata, whereToPlaceIt){
 		var containerFragment = d.createDocumentFragment();
 
 		renderForMe(JSONtemplate,JSONdata,containerFragment);
