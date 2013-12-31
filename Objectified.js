@@ -31,12 +31,29 @@
 	}
 
 
-	function extendAttrOnObj(element, attributes){
+	function extendAttrsOnObj(element, attributes){
 		for(var attr in attributes){
 			if( element.hasOwnProperty(attr) ){
 				element[attr] = attributes[attr];
 			} else {
-				element.setAttribute(attr,attributes[attr]);
+				switch(attr){
+					case "class":
+					case "c":
+						element.className = attributes[attr];
+						break;
+					case "text":
+					case "Text":
+					case "t":
+						element.innerText = attributes[attr];
+						break;
+					case "html":
+					case "HTML":
+					case "h":
+						element.innerHTML = attributes[attr];
+						break;
+					default:
+						element.setAttribute(attr,attributes[attr]);
+				}
 			}
 		}
 	}
@@ -45,16 +62,16 @@
 		var element = createA(obj.tag);
 		var attributes = obj.attributes;
 
-		extendAttrOnObj(element, attributes);
+		extendAttrsOnObj(element, attributes);
 
 		if(obj.data){
 			if(typeof JSONdata[obj.data] === "string"){
-			//if(typeof obj.data === "string"){
 				renderATextNodeForMe(element,JSONdata[obj.data]);
 			} else if(typeof JSONdata[obj.data] === "object"){
-				//console.log(element, obj, JSONdata);
-				extendAttrOnObj(element, JSONdata[obj.data]);
+				extendAttrsOnObj(element, JSONdata[obj.data]);
 			}
+		} else if (obj.passedData){
+			extendAttrsOnObj(element, obj.passedData);
 		}
 
 		if(obj.childNodes && !obj.childLooped){
@@ -79,7 +96,10 @@
 				renderATextNodeForMe(containerFragment,JSONtemplate.childNodes[i]);
 			} else if(typeof JSONtemplate.childNodes[i] === "object" && JSONtemplate.childNodes[i].childLooped){
 				var childContainer = renderAnElementForMe(containerFragment,JSONdata,JSONtemplate.childNodes[i],true);
+
 				for(var j = 0;j<JSONdata[JSONtemplate.childNodes[i].childData].length;j++){
+					JSONtemplate.childNodes[i].childNodes[0].passedData = JSONdata[JSONtemplate.childNodes[i].childData][j];
+
 					renderAnElementForMe(childContainer,
 						JSONdata[JSONtemplate.childNodes[i].childData][j],
 						JSONtemplate.childNodes[i].childNodes[0]);
@@ -107,7 +127,7 @@
 	}
 
 	objectified.name = "Objectified.js";
-	objectified.version = "0.0.1";
+	objectified.version = "0.0.7";
 	objectified.render = render;
 
 }));

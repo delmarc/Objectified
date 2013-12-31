@@ -7,23 +7,11 @@
 		<script type="text/javascript" src="Objectified.js"></script>
 		<script>
 			var sometemplate = {
-				/* was nice but going too crazy with this...
-				"headChildNodes":[
-					{
-						"tag" : "link",
-						"attributes":{
-							"rel" : "stylesheet",
-							"type" : "text/css", 
-							"href" : "css/main.css"
-						}
-					}
-				],
-				*/
 				"childNodes": [
 					{
 						"tag" : "header",
 						"attributes":{
-							"className" : "someClass",
+							"class" : "someClass",
 							"id" : "aheaderid",
 							"data-popoman" : "yeaman"
 						},
@@ -35,29 +23,24 @@
 								"childNodes": [
 									{
 										"tag" : "a",
-										/*
 										"attributes":{
-											"href": {
-												"data":"href"
-											}
-										},
-										*/
-										//"data":"name"
+											"class": "po"
+										}
 									}
 								]
 							},{
 								"tag" : "h1",
-								"className" : "someClass",
+								"class" : "someClass",
 								"id" : "aheaderid",
 								"data" : "doo"
 							},{
 								"tag" : "p",
-								"className" : "someClass",
+								"class" : "someClass",
 								"id" : "aheaderid",
 								"data" : "foo"
 							}
 						]
-					}/*,
+					},
 					"popoman"
 					,{
 						"tag" : "article",
@@ -78,13 +61,12 @@
 								"childData" : "lis",
 								"childNodes": [
 									{
-										"tag" : "li",
-										"data": "amount"
+										"tag" : "li"
 									}
 								]
 							}
 						]
-					}*/
+					}
 				]
 			};
 
@@ -94,24 +76,25 @@
 					"innerHTML":"popo <em>haha</em>"
 				},
 				"navEles" : [{
-					"text":"one",
+					"innerText":"one",
 					"href":"#1"
 				},{
-					"text":"dos",
+					"innerText":"dos",
 					"href":"#2"
 				},{
-					"text":"tres",
+					"innerText":"tres",
 					"href":"#3"
 				},{
-					"text":"4",
+					"innerText":"4",
 					"href":"#4"
 				}],
 				"lis" : [{
-					"innerHTML":13
+					"HTML":"13 <a href='#123'>yea boy</a>"
 				},{
-					"innerHTML":24
+					"class":"asdasd",
+					"text":24
 				},{
-					"innerHTML":30
+					"text":30
 				}]
 			};
 
