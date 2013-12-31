@@ -4,7 +4,6 @@
 		<title>Objectified</title>
 	</head>
 	<body>
-
 		<script type="text/javascript" src="Objectified.js"></script>
 		<script>
 			var sometemplate = {
@@ -30,13 +29,35 @@
 						},
 						"childNodes": [
 							{
+								"tag" : "nav",
+								"childLooped" : true,
+								"childData" : "navEles",
+								"childNodes": [
+									{
+										"tag" : "a",
+										/*
+										"attributes":{
+											"href": {
+												"data":"href"
+											}
+										},
+										*/
+										//"data":"name"
+									}
+								]
+							},{
+								"tag" : "h1",
+								"className" : "someClass",
+								"id" : "aheaderid",
+								"data" : "doo"
+							},{
 								"tag" : "p",
 								"className" : "someClass",
 								"id" : "aheaderid",
 								"data" : "foo"
 							}
 						]
-					},
+					}/*,
 					"popoman"
 					,{
 						"tag" : "article",
@@ -53,20 +74,47 @@
 						"childNodes": [
 							{
 								"tag" : "ul",
+								"childLooped" : true,
+								"childData" : "lis",
 								"childNodes": [
 									{
-										"tag" : "li"
+										"tag" : "li",
+										"data": "amount"
 									}
 								]
 							}
 						]
-					}
+					}*/
 				]
 			};
+
 			var somedata = {
-				"foo" : "pa",
-				"lis" : []
+				"foo" :"pa",
+				"doo" : {
+					"innerHTML":"popo <em>haha</em>"
+				},
+				"navEles" : [{
+					"text":"one",
+					"href":"#1"
+				},{
+					"text":"dos",
+					"href":"#2"
+				},{
+					"text":"tres",
+					"href":"#3"
+				},{
+					"text":"4",
+					"href":"#4"
+				}],
+				"lis" : [{
+					"innerHTML":13
+				},{
+					"innerHTML":24
+				},{
+					"innerHTML":30
+				}]
 			};
+
 			Objectified.render(sometemplate,somedata)
 		</script>
 

@@ -30,30 +30,42 @@
 		return d.createTextNode(textString);
 	}
 
-	function renderAnElementForMe(appendingElem, JSONdata, obj){
-		var element = createA(obj.tag);
-		var attributes = obj.attributes;
 
+	function extendAttrOnObj(element, attributes){
 		for(var attr in attributes){
 			if( element.hasOwnProperty(attr) ){
 				element[attr] = attributes[attr];
 			} else {
 				element.setAttribute(attr,attributes[attr]);
-			}		
+			}
 		}
+	}
+
+	function renderAnElementForMe(appendingElem, JSONdata, obj, returnElem){
+		var element = createA(obj.tag);
+		var attributes = obj.attributes;
+
+		extendAttrOnObj(element, attributes);
 
 		if(obj.data){
-			if(typeof obj.data === "string"){
-				renderATextNodeForMe(element,obj.data);
-			//} else if(typeof obj.data === "object"){
+			if(typeof JSONdata[obj.data] === "string"){
+			//if(typeof obj.data === "string"){
+				renderATextNodeForMe(element,JSONdata[obj.data]);
+			} else if(typeof JSONdata[obj.data] === "object"){
+				//console.log(element, obj, JSONdata);
+				extendAttrOnObj(element, JSONdata[obj.data]);
 			}
 		}
 
-		if(obj.childNodes){
+		if(obj.childNodes && !obj.childLooped){
 			renderForMe(obj, JSONdata, element);
 		}
 
 		appendingElem.appendChild(element);
+
+		if(returnElem){
+			return element
+		}
 	}
 
 	function renderATextNodeForMe(appendingElem, obj){
@@ -65,8 +77,17 @@
 		for(var i in JSONtemplate.childNodes){
 			if(typeof JSONtemplate.childNodes[i] === "string"){
 				renderATextNodeForMe(containerFragment,JSONtemplate.childNodes[i]);
-			} else if(typeof JSONtemplate.childNodes[i] === "object"){
-				if(JSONtemplate.childNodes[i].tag){
+			} else if(typeof JSONtemplate.childNodes[i] === "object" && JSONtemplate.childNodes[i].childLooped){
+				var childContainer = renderAnElementForMe(containerFragment,JSONdata,JSONtemplate.childNodes[i],true);
+				for(var j = 0;j<JSONdata[JSONtemplate.childNodes[i].childData].length;j++){
+					renderAnElementForMe(childContainer,
+						JSONdata[JSONtemplate.childNodes[i].childData][j],
+						JSONtemplate.childNodes[i].childNodes[0]);
+				}
+			} else if(typeof JSONtemplate.childNodes[i] === "object" && JSONtemplate.childNodes[i].tag) {
+				if(JSONtemplate.childNodes[i].data || JSONtemplate.childNodes[i].childData){
+					renderAnElementForMe(containerFragment,JSONdata,JSONtemplate.childNodes[i]);
+				} else {
 					renderAnElementForMe(containerFragment,JSONdata,JSONtemplate.childNodes[i]);
 				}
 			}
