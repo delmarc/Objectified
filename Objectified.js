@@ -1,5 +1,5 @@
 /*
-
+	
 */
 
 (function (root, factory){
@@ -18,10 +18,11 @@
 		}
 	}
 }(this, function(objectified){
+	// have to do catches for node and such
 
-	// shortener
 	var d = document,
 		b = d.body;
+
 
 	function createA(elementString){
 		return d.createElement(elementString);
@@ -33,27 +34,33 @@
 
 	function extendAttrsOnObj(element, attributes){
 		for(var attr in attributes){
-			if( element.hasOwnProperty(attr) ){
-				element[attr] = attributes[attr];
-			} else {
-				switch(attr){
-					case "class":
-					case "c":
-						element.className = attributes[attr];
-						break;
-					case "text":
-					case "Text":
-					case "t":
-						element.innerText = attributes[attr];
-						break;
-					case "html":
-					case "HTML":
-					case "h":
-						element.innerHTML = attributes[attr];
-						break;
-					default:
-						element.setAttribute(attr,attributes[attr]);
+			try{
+				if( element.hasOwnProperty(attr) ){
+					element[attr] = attributes[attr];
+				} else {
+					switch(attr){
+						case "class":
+						case "c":
+							element.className = attributes[attr];
+							break;
+						case "text":
+						case "Text":
+						case "t":
+							element.innerText = attributes[attr];
+							break;
+						case "html":
+						case "HTML":
+						case "H":
+							element.innerHTML = attributes[attr];
+							break;
+						default:
+							element.setAttribute(attr,attributes[attr]);
+					}
 				}
+			} catch(e){
+				// catching something cause i needed to know what was happening
+				console.error(e)
+				console.log(element, attributes)
 			}
 		}
 	}
@@ -97,12 +104,22 @@
 			} else if(typeof JSONtemplate.childNodes[i] === "object" && JSONtemplate.childNodes[i].childLooped){
 				var childContainer = renderAnElementForMe(containerFragment,JSONdata,JSONtemplate.childNodes[i],true);
 
-				for(var j = 0;j<JSONdata[JSONtemplate.childNodes[i].childData].length;j++){
-					JSONtemplate.childNodes[i].childNodes[0].passedData = JSONdata[JSONtemplate.childNodes[i].childData][j];
+				if(typeof JSONtemplate.childNodes[i].childData === "object"){
+					for(var j = 0;j<JSONtemplate.childNodes[i].childData.length;j++){
+						JSONtemplate.childNodes[i].childNodes[0].passedData = JSONtemplate.childNodes[i].childData[j];
 
-					renderAnElementForMe(childContainer,
-						JSONdata[JSONtemplate.childNodes[i].childData][j],
-						JSONtemplate.childNodes[i].childNodes[0]);
+						renderAnElementForMe(childContainer,
+							JSONtemplate.childNodes[i].childData[j],
+							JSONtemplate.childNodes[i].childNodes[0]);
+					}
+				} else {
+					for(var j = 0;j<JSONdata[JSONtemplate.childNodes[i].childData].length;j++){
+						JSONtemplate.childNodes[i].childNodes[0].passedData = JSONdata[JSONtemplate.childNodes[i].childData][j];
+
+						renderAnElementForMe(childContainer,
+							JSONdata[JSONtemplate.childNodes[i].childData][j],
+							JSONtemplate.childNodes[i].childNodes[0]);
+					}
 				}
 			} else if(typeof JSONtemplate.childNodes[i] === "object" && JSONtemplate.childNodes[i].tag) {
 				if(JSONtemplate.childNodes[i].data || JSONtemplate.childNodes[i].childData){

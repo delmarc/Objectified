@@ -2,7 +2,15 @@ Objectified
 ===========
 
 ###### Objectified was started 12/27/13
-###### Current version - 0.0.7 - 12/31/13
+###### Current version - 0.1.1 - 1/2/13
+
+
+TODOS
+-----
+
+1. Have to cache the objects in the loops...
+2. Do a performance test against typical templating frameworks...
+
 
 Why???
 ------
