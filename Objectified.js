@@ -66,8 +66,8 @@
 	}
 
 	function renderAnElementForMe(appendingElem, JSONdata, obj, returnElem){
-		var element = createA(obj.tag);
-		var attributes = obj.attributes;
+		var element = createA(obj.tag),
+			attributes = obj.attributes;
 
 		extendAttrsOnObj(element, attributes);
 
@@ -99,7 +99,10 @@
 
 	function renderForMe(JSONtemplate,JSONdata,containerFragment){
 		for(var i in JSONtemplate.childNodes){
-			if(typeof JSONtemplate.childNodes[i] === "string"){
+			if(typeof JSONtemplate.childNodes[i] === "function"){
+				// have to do a better check and not only depend on typeof
+				containerFragment.appendChild( document.createElement("p") );
+			} else if(typeof JSONtemplate.childNodes[i] === "string"){
 				renderATextNodeForMe(containerFragment,JSONtemplate.childNodes[i]);
 			} else if(typeof JSONtemplate.childNodes[i] === "object" && JSONtemplate.childNodes[i].childLooped){
 				var childContainer = renderAnElementForMe(containerFragment,JSONdata,JSONtemplate.childNodes[i],true);
@@ -132,15 +135,25 @@
 	}
 
 	function render(JSONtemplate, JSONdata, whereToPlaceIt){
-		var containerFragment = d.createDocumentFragment();
+		var containerFragment = d.createDocumentFragment(),
+			placedInTo = null;
+
+		// think this again
 
 		renderForMe(JSONtemplate,JSONdata,containerFragment);
 
 		if(whereToPlaceIt){
-			document.getElementbyId(whereToPlaceIt).appendChild(containerFragment);
+			if(typeof whereToPlaceIt === "object"){
+				whereToPlaceIt.appendChild(containerFragment);
+			} else {
+				var placedInTo = document.getElementbyId(whereToPlaceIt);
+				placedInTo.appendChild(containerFragment);
+			}
 		} else {
 			b.appendChild(containerFragment);
 		}
+
+		JSONtemplate.callback && JSONtemplate.callback(placedInTo || whereToPlaceIt);
 	}
 
 	objectified.name = "Objectified.js";
