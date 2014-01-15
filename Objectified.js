@@ -8,7 +8,7 @@
 		factory(exports);
 	} else {
 		var objectified = {};
-		factory(objectified);
+		factory(objectified,root);
 		if (typeof define === "function" && define.amd) {
 			// AMD
 			define(objectified);
@@ -17,11 +17,13 @@
 			root.Objectified = objectified;
 		}
 	}
-}(this, function(objectified){
+}(this, function(objectified, globalObj){
 	// have to do catches for node and such
+	// console.log(globalObj);
 
 	var d = document,
-		b = d.body;
+		b = d.body,
+		areYouIE = !!globalObj.attachEvent;
 
 
 	function createA(elementString){
@@ -32,22 +34,38 @@
 	}
 
 
+	function applyStylesOnObj(DOMobject, styles){
+		for(var style in styles){
+			DOMobject.style[style] = styles[style];
+		}
+	}
+
 	function extendAttrsOnObj(element, attributes){
 		for(var attr in attributes){
 			try{
 				if( element.hasOwnProperty(attr) ){
-					element[attr] = attributes[attr];
+					if(attr === "style"){
+						applyStylesOnObj(element,attributes[attr]);
+					} else {
+						element[attr] = attributes[attr];
+					}
 				} else {
 					switch(attr){
 						case "class":
 						case "c":
 							element.className = attributes[attr];
 							break;
+						case "innerText":
 						case "text":
 						case "Text":
 						case "t":
-							element.innerText = attributes[attr];
+							if(element.innerText){
+								element.innerText = attributes[attr];
+							} else {
+								element.textContent = attributes[attr];
+							}
 							break;
+						case "innerHTML":
 						case "html":
 						case "HTML":
 						case "H":
@@ -69,7 +87,9 @@
 		var element = createA(obj.tag),
 			attributes = obj.attributes;
 
-		extendAttrsOnObj(element, attributes);
+		if(attributes){
+			extendAttrsOnObj(element, attributes);
+		}
 
 		if(obj.data){
 			if(typeof JSONdata[obj.data] === "string"){
@@ -147,6 +167,7 @@
 				whereToPlaceIt.appendChild(containerFragment);
 			} else {
 				var placedInTo = document.getElementbyId(whereToPlaceIt);
+				placedInTo.innerHTML = "";
 				placedInTo.appendChild(containerFragment);
 			}
 		} else {
