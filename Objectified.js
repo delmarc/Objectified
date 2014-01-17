@@ -43,17 +43,20 @@
 	function extendAttrsOnObj(element, attributes){
 		for(var attr in attributes){
 			try{
-				if( element.hasOwnProperty(attr) ){
-					if(attr === "style"){
-						applyStylesOnObj(element,attributes[attr]);
-					} else {
-						element[attr] = attributes[attr];
-					}
+				if(attr === "style"){
+					applyStylesOnObj(element,attributes[attr]);
+				} else if( element.hasOwnProperty(attr) ){
+					element[attr] = attributes[attr];
 				} else {
 					switch(attr){
 						case "class":
+						case "className":
 						case "c":
-							element.className = attributes[attr];
+							if(element.className){
+								element.className = attributes[attr];
+							} else {
+								element.setAttribute("class",attributes[attr]);
+							}
 							break;
 						case "innerText":
 						case "text":
@@ -154,7 +157,7 @@
 		}
 	}
 
-	function render(JSONtemplate, JSONdata, whereToPlaceIt){
+	function render(JSONtemplate, JSONdata, whereToPlaceIt, callMeBack){
 		var containerFragment = d.createDocumentFragment(),
 			placedInTo = null;
 
