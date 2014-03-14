@@ -25,6 +25,12 @@
 		b = d.body,
 		areYouIE = !!globalObj.attachEvent;
 
+	function init(){
+		if(areYouIE){
+			extendAttrsOnObj = extendAttrsOnObjForOldIE;
+		}
+	}
+
 
 	function createA(elementString){
 		return d.createElement(elementString);
@@ -40,15 +46,50 @@
 		}
 	}
 
+	function extendAttrsOnObjForOldIE(element, attributes){
+		for(var attr in attributes){
+
+			if(attr === "style"){
+				applyStylesOnObj(element,attributes[attr]);
+			} else {
+				switch(attr){
+					case "className":
+					case "c":
+						element.setAttribute("class",attributes[attr]);
+						break;
+					case "innerHTML":
+					case "H":
+						element.innerHTML = attributes[attr];
+						break;
+					case "innerText":
+					case "text":
+					case "T":
+					case "textContent":
+						element.innerText = attributes[attr];
+						break;
+					default:
+						element.setAttribute(attr,attributes[attr]);
+				}
+			}
+		}
+	}
+
 	function extendAttrsOnObj(element, attributes){
 		for(var attr in attributes){
 			try{
 				if(attr === "style"){
 					applyStylesOnObj(element,attributes[attr]);
 				} else if( element.hasOwnProperty(attr) ){
-					element[attr] = attributes[attr];
+					if(attr === "onsubmit"){
+						element.setAttribute("onsubmit",attributes[attr]);
+					} else {
+						element[attr] = attributes[attr];
+					}
 				} else {
 					switch(attr){
+						case "id":
+							element.id = attributes[attr];
+							break;
 						case "class":
 						case "className":
 						case "c":
@@ -80,8 +121,10 @@
 				}
 			} catch(e){
 				// catching something cause i needed to know what was happening
+				/*
 				console.error(e)
 				console.log(element, attributes)
+				*/
 			}
 		}
 	}
@@ -178,10 +221,21 @@
 		}
 
 		JSONtemplate.callback && JSONtemplate.callback(placedInTo || whereToPlaceIt);
+
+		if(callMeBack) {
+			return callMeBack();
+		} 
 	}
 
 	objectified.name = "Objectified.js";
-	objectified.version = "0.0.7";
+	objectified.version = "0.4.2";
+
+	objectified.atTheTime = {
+		song : "ViennaCalling",
+		artist : "Falco"
+	};
+
 	objectified.render = render;
 
+	init(objectified, globalObj);
 }));
