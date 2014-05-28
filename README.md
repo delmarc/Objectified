@@ -78,7 +78,7 @@ Objectified.render({
 
 That will obviously produce what is below
 
-&lt;div id="aNiceId"&gt;&lt;h1 class="someClass"&gt;some header text&lt;/h3&gt;&lt;/div&gt;
+&lt;div id="aNiceId"&gt;&lt;h1 class="someClass"&gt;some header text&lt;/h1&gt;&lt;/div&gt;
 
 
 I'll create a more understandable page with more examples but this will do for now...
