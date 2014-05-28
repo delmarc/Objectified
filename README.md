@@ -5,13 +5,15 @@ This is an attempt in order to get people thinking about templating differently.
 
 
 ###### Objectified was started 12/27/13
-###### Current version - 0.6.1 - 5/20/14
+###### Current version - 0.6.2 - 5/28/14
 
 
 TODOS
 -----
 
-1. have to write it to work with all the different module types... I have only worked with browsers and node
+1. have to write it to work with all the different module types... I have only worked with browsers and straight node
+2. properly deal with dataset property... that is easy...
+3. do the same with classList property... pretty easy too...
 
 
 Why???
@@ -29,7 +31,7 @@ __Well__, there was a project that I had to start at work. Since I didnt want to
 
 
 Basic Examples
-===========
+==============
 
 Objectified is nothing more then a template rendering engine if you will... it just returns documentfragments in which you can then append where ever you please... In a Node environment, I have lightly emulated the ability to create document fragments and elements... This is all done with JSON... so if you know how to properly build elements with javascript and understand the way it all works... This is nothing more then creating fragments or even whole documents with JSON...
 
@@ -47,9 +49,9 @@ Objectified.render({
 
 That will obviously produce what is below
 
-<p>some nice text</p>
+&lt;p&gt;some nice text&lt;/p&gt;
 
-You can either edit straight on the innerHTML or even do what is below...
+You can either edit straight on the innerHTML, textContent/innerText or even do what is below...
 
 
 Second Example
@@ -76,10 +78,9 @@ Objectified.render({
 
 That will obviously produce what is below
 
-<p>some nice text</p>
+&lt;div id="aNiceId"&gt;&lt;h1 class="someClass"&gt;some header text&lt;/h3&gt;&lt;/div&gt;
 
 
-I'll create a more understandable page but this will do for now
-
+I'll create a more understandable page with more examples but this will do for now...
 
 Delmarc

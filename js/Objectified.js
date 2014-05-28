@@ -284,7 +284,7 @@
     }
 
 	objectified.name = "Objectified.js";
-	objectified.version = "0.6.1";
+	objectified.version = "0.6.2";
 
 	objectified.atTheTime = {
 		song : "Life is But a Dream",
@@ -357,7 +357,11 @@
                 this.renderAllAttributes = function(){
                     var attrString = "";
                     for(var i in self.attributeList){
-                        attrString += " "+i+"=\""+self.attributeList[i]+"\"";
+                        if(self.attributeList[i] !== ""){
+                            attrString += " "+i+"=\""+self.attributeList[i]+"\"";
+                        } else {
+                            attrString += " "+i+"";
+                        }
                     }
                     return attrString;
                 };
@@ -441,7 +445,7 @@
             },
             documentElement : function(){
             },
-            */
+                */
             createComment : function(){
                 return new psuedoFragment();
             },
