@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Objectified Performance Tests</title>
+        <script src="../js/Objectified.js"></script>
+
+        <!-- the competition -->
+        <script src="competition/underscore-min.js"></script>
+        <script src="competition/jquery-1.11.1.min.js"></script>
+        <script src="competition/mustache.js"></script>
+        <script src="competition/underscore-min.js"></script>
+    </head>
+    <body>
+        <a href="javascript:simpleTestWithInnerHTML();">run the simple test</a>
+
+        <br>
+
+        <a href="javascript:simpleTestWithSimpleArrayForData();">run the simple test with simple array for data</a>
+
+        <br>
+
+        <a href="javascript:simpleTestWithSimpleObjectForData();">run the simple test with simple object for data</a>
+
+    	<table id="resultsTable" style="display:block;"></table>
+
+    	<div id="dropPoint"></div>
+
+    	<script>
+        function simpleTestWithInnerHTML(){
+            var startTime, endTime, i,
+                cutOffNumber = 1000,
+                renderCycleObj = {},
+                instance;
+
+            // using raw JS
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("p");
+                instance.innerHTML = "yea boy";
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.vanilla = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            };
+
+
+            // using Objectified
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Objectified.render({tagName:"p",attributes:{innerHTML:"yea boy"}});
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.Objectified = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using jquery
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = $("<p>").html("yea boy");
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.jquery = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using mustache
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Mustache.render("<p>yea boy</p>");
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustache = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+            // using mustache with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("p");
+                instance.innerHTML = Mustache.render("yea boy");
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustacheWithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using underscore
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = _.template("<p>yea boy</p>",{});
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._ = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+            // using underscore with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("p");
+                instance.innerHTML = _.template("yea boy");
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._WithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+            return displayResults(renderCycleObj);
+        }
+
+        function simpleTestWithSimpleArrayForData(){
+            var startTime, endTime, i, j,
+                cutOffNumber = 1000,
+                renderCycleObj = {},
+                instance,
+                listInstance;
+
+            var arrayForTest = ["home","about","test","contact us","love, peace &amp; chicken grease"];
+
+            // using raw JS
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("ul");
+
+                for(j=0;j<arrayForTest.length;j++){
+                    listInstance = document.createElement("li");
+                    listInstance.className = "menu-item";
+                    listInstance.innerHTML = arrayForTest[j];
+                    instance.appendChild(listInstance);
+                }
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.vanilla = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            };
+
+
+            // using Objectified
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Objectified.render({
+                    tag:"ul",
+                    dataBind: arrayForTest,
+                    childrenDataHandling:{
+                        tagName : "li",
+                        dataBindedAttributes : {
+                            innerHTML : ""
+                        },
+                        attributes:{
+                            className : "menu-item"
+                        }
+                    }
+                });
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.Objectified = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using jquery
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                $rowInstance = $("<ul>");
+                $.each(arrayForTest, function(){
+                    $rowInstance.append($("<li>").addClass("menu-item").html(this));
+                });
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.jquery = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using mustache
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Mustache.render("<ul>{{#.}}<li>{{.}}</li>{{/.}}</ul>",arrayForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustache = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+            // using mustache with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("ul");
+                instance.innerHTML = Mustache.render("{{#.}}<li>{{.}}</li>{{/.}}",arrayForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustacheWithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+            // using underscore
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = _.template("<ul><% _.each(arguments[0], function(instance) { %><li><%= instance %></li><% }); %></ul>", arrayForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._ = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+            // using underscore with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("ul");
+                instance.innerHTML = _.template("<% _.each(arguments[0], function(instance) { %><li><%= instance %></li><% }); %>", arrayForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._WithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+            return displayResults(renderCycleObj);
+        }
+
+        function simpleTestWithSimpleObjectForData(){
+            var startTime, endTime, i, j,
+                cutOffNumber = 1000,
+                renderCycleObj = {},
+                containerInstance,
+                headerInstance,
+                pInstance;
+
+            var objForTest = {
+                "header":{
+                    "text":"some bullshit that is a h1"
+                },
+                "text":"well the p text"
+            };
+
+            // using raw JS
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("div");
+
+                headerInstance = document.createElement("h1");
+                headerInstance.innerHTML = objForTest.header.text;
+                pInstance = document.createElement("p");
+                pInstance.innerHTML = objForTest.text;
+
+                instance.appendChild(headerInstance);
+                instance.appendChild(pInstance);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.vanilla = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            };
+
+
+            // using Objectified
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Objectified.render({
+                        tag:"div",
+                        children:[{
+                            tag:"h1",
+                            dataBindedAttributes:{
+                                innerHTML:["header","text"]
+                            }
+                        },{
+                            tag:"p",
+                            dataBindedAttributes:{
+                                innerHTML:["text"]
+                            }
+                        }]
+                }, objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.Objectified = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using jquery
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = $("<div>").append($("h1").html(objForTest.header.text)).append($("p").html(objForTest.text));
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.jquery = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using mustache
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Mustache.render("<div><h1>{{header.text}}</h1><p>{{text}}</p></div>",objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustache = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using mustache with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("div");
+                instance.innerHTML = Mustache.render("<h1>{{header.text}}</h1><p>{{text}}</p>",objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustacheWithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using underscore
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = _.template("<div><h1><%= header.text %></h1><p><%= text %></p></div>", objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._ = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using underscore with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("div"); 
+                instance.innerHTML = _.template("<h1><%= header.text %></h1><p><%= text %></p>", objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._WithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            return displayResults(renderCycleObj);
+        }
+
+        function simpleTestWithMiddleObjectForData(){
+            var startTime, endTime, i, j,
+                cutOffNumber = 1000,
+                renderCycleObj = {},
+                containerInstance,
+                headerInstance,
+                pInstance;
+
+            var objForTest = {
+                "header":{
+                    "text":"some bullshit that is a h1"
+                },
+                "text":"well the p text"
+            };
+
+            /*
+            // using raw JS
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("div");
+
+                headerInstance = document.createElement("h1");
+                headerInstance.innerHTML = objForTest.header.text;
+                pInstance = document.createElement("p");
+                pInstance.innerHTML = objForTest.text;
+
+                instance.appendChild(headerInstance);
+                instance.appendChild(pInstance);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.vanilla = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            };
+
+
+            // using Objectified
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Objectified.render({
+                        tag:"div",
+                        children:[{
+                            tag:"h1",
+                            dataBindedAttributes:{
+                                innerHTML:["header","text"]
+                            }
+                        },{
+                            tag:"p",
+                            dataBindedAttributes:{
+                                innerHTML:["text"]
+                            }
+                        }]
+                }, objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.Objectified = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using jquery
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = $("<div>").append($("h1").html(objForTest.header.text)).append($("p").html(objForTest.text));
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.jquery = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using mustache
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = Mustache.render("<div><h1>{{header.text}}</h1><p>{{text}}</p></div>",objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustache = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using mustache with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("div");
+                instance.innerHTML = Mustache.render("<h1>{{header.text}}</h1><p>{{text}}</p>",objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj.mustacheWithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using underscore
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = _.template("<div><h1><%= header.text %></h1><p><%= text %></p></div>", objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._ = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+
+            // using underscore with DOM Object
+            startTime = new Date().getTime();
+            for(i=0;i<cutOffNumber;i++){
+                instance = document.createElement("div"); 
+                instance.innerHTML = _.template("<h1><%= header.text %></h1><p><%= text %></p>", objForTest);
+            }
+            endTime = new Date().getTime();
+            renderCycleObj._WithDOMObj = {
+                timeToCutOff : endTime - startTime,
+                average : (endTime - startTime)/cutOffNumber,
+                returned : instance
+            }
+
+            return displayResults(renderCycleObj);
+            */
+        }
+
+    	function displayResults(data){
+    		console.log(data);
+    		var table = document.getElementById("resultsTable"),
+    			rowInstance, cellInstance;
+
+            table.innerHTML = "";
+
+    		for(var i in data){
+    			rowInstance = document.createElement("tr");
+
+                libraryName = document.createElement("td");
+                libraryName.innerHTML = i;
+
+                rowInstance.appendChild(libraryName);
+
+    			for(var j in data[i]){
+                    cellInstance = document.createElement("td");
+                    cellInstance.innerHTML = data[i][j];
+                    rowInstance.appendChild(cellInstance);
+    			}
+    			
+                table.appendChild(rowInstance);
+    		}
+    	}
+    	</script>
+
+    </body>
+</html>

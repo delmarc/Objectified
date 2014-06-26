@@ -6,6 +6,161 @@
         <script src="js/Objectified.js"></script>
     </head>
     <body>
-    	<script>document.body.appendChild(Objectified.render({tag:"div",children:[{tag:"p",attributes:{className:"yea",innerHTML:"OK"}}]}));</script>
+
+    	<script>
+    	var dataObj = {
+    		list : ["home","about","test","contact us","love, peace &amp; chicken grease"]
+    	},
+    		otherObj = {
+    			prop1 : "yeaBoy",
+    			prop2 : "Oh ok",
+    			prop3 : {
+    				prop31 : 1,
+    				prop32 : "oh so nice"
+    			}
+    		};
+
+    	document.body.appendChild(Objectified.render({tag:"div",children:[{tag:"p",attributes:{className:"yea",innerHTML:"OK",style:{color:"#ff0000"}}}]}));
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var dropOffItem = Objectified.render({
+            tag:"ul",
+            dataBind:["home","about","test","contact us","love, peace &amp; chicken grease"],
+            childrenDataHandling:{
+                tagName : "li",
+                dataBindedAttributes : {
+                    innerHTML : ""
+                },
+                attributes:{
+                    className : "menu-item"
+                }
+            }
+        });
+
+        document.body.appendChild( dropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var secondDropOffItem = Objectified.render({
+            tag:"ul",
+            childrenDataHandling:{
+                tagName : "li",
+                dataBindedAttributes : {
+                    innerHTML : "",
+                    id : ""
+                },
+                attributes:{
+                    className : "another-menu-item"
+                }
+            }
+        }, ["home","about","test","contact us","love, peace &amp; chicken grease"]);
+
+        document.body.appendChild( secondDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var secondOtherDropOffItem = Objectified.render({
+            tag:"ul",
+            childrenDataHandling:{
+                tagName : "li",
+                dataBindedAttributes : {
+                    innerHTML : []
+                },
+                attributes:{
+                    className : "another-menu-item"
+                }
+            }
+        }, ["home again","about again","test again","contact us again","love, peace &amp; chicken grease again"]);
+
+        document.body.appendChild( secondOtherDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var thirdDropOffItem = Objectified.render({
+                tag:"div",
+                children:[{
+                    tag:"h1",
+                    dataBindedAttributes:{
+                        innerHTML:["header","text"]
+                    }
+                },{
+                    tag:"p",
+                    dataBindedAttributes:{
+                        innerHTML:["text"]
+                    }
+                }]
+        }, {
+            "header":{
+                "text":"some bull that is a h1"
+            },
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( thirdDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var fifthDropOffItem = Objectified.render({
+            tag:"div",
+            children:[{
+                tag:"h1",
+                dataBindedAttributes:{
+                    innerHTML:["header","text"]
+                },
+                children:[{
+                    tag:"a",
+                    attributes:{
+                        innerHTML:"linky link"
+                    },
+                    dataBindedAttributes:{
+                        href:["header","link"]
+                    }
+                }]
+            },{
+                tag:"ul",
+                dataBind:["list"],
+                childrenDataHandling:{
+                    tagName : "li",
+                    dataBindedAttributes : {
+                        innerHTML : []
+                    },
+                    attributes:{
+                        className : "menu-item"
+                    }
+                }
+            },{
+                tag:"p",
+                dataBindedAttributes:{
+                    innerHTML:["text"]
+                }
+            }]
+        }, {
+            "header":{
+                "text":"another header text",
+                "link":"#"
+            },
+            "list":[1,2,3,4],
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( fifthDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+    	</script>
+
     </body>
 </html>

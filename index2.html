@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Objectified</title>
+        <script src="js/Objectified.js"></script>
+    </head>
+    <body>
+
+    	<script>
+        /*
+    	document.body.appendChild(
+            Objectified.render({
+                tag:"div",
+                children:[{
+                    tag:"p",
+                    attributes:{
+                        className:"yea",
+                        innerHTML:"OK",
+                        dataset:{
+                            "hello":"OK"
+                        },
+                        style:{
+                            color:"#ff00ff"
+                        }
+                    }
+                }]
+            })
+        );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+        */
+
+        var fifthDropOffItem = Objectified.render({
+            tag:"div",
+            children:[/*{
+                tag:"h1",
+                dataBindedAttributes:{
+                    innerHTML:["header","text"]
+                },
+                children:[{
+                    tag:"a",
+                    attributes:{
+                        innerHTML:"linky link"
+                    },
+                    dataBindedAttributes:{
+                        href:["header","link"]
+                    }
+                }]
+            },*/{
+                tag:"ul",
+                dataBind:["list"],
+                childrenDataHandling:{
+                    tagName : "li",
+                    dataBindedAttributes : {
+                        innerHTML : []
+                    },
+                    attributes:{
+                        className : "menu-item"
+                    }
+                }
+            }/*,{
+                tag:"p",
+                dataBindedAttributes:{
+                    innerHTML:["text"]
+                }
+            }*/]
+        }, {
+            "header":{
+                "text":"another header text",
+                "link":"#"
+            },
+            "list":[1,2,3,4],
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( fifthDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");        
+
+    	</script>
+
+    </body>
+</html>

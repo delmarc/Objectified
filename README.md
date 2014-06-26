@@ -5,15 +5,16 @@ This is an attempt in order to get people thinking about templating differently.
 
 
 ###### Objectified was started 12/27/13
-###### Current version - 0.6.2 - 5/28/14
+###### Current version - 0.7.3 - 6/25/14
 
 
 TODOS
 -----
 
 1. have to write it to work with all the different module types... I have only worked with browsers and straight node
-2. properly deal with dataset property... that is easy...
+2. properly deal with dataset property... that is easy... this will also be working on the style object as well...
 3. do the same with classList property... pretty easy too...
+4. work with iterating through an array... thru binding the data...
 
 
 Why???
@@ -80,6 +81,35 @@ That will obviously produce what is below
 
 &lt;div id="aNiceId"&gt;&lt;h1 class="someClass"&gt;some header text&lt;/h1&gt;&lt;/div&gt;
 
+
+Third Example
+--------------
+
+Objectified.render({
+    tag:"div",
+    children:[{
+        tag:"h1",
+        dataBindedAttributes:{
+            innerHTML:["header","text"]
+        }
+    },{
+        tag:"p",
+        dataBindedAttributes:{
+            innerHTML:["text"]
+        }
+    }]
+}, {
+    "header":{
+        "text":"some bull that is a h1"
+    },
+    "text":"well the p text"
+});
+
+The data object that is the second parameter is used to populate the template from the first parameter...
+
+&lt;div&gt;&lt;h1&gt;some bull that is a h1&lt;/h1&gt;&lt;p&gt;well the p text&lt;/p&gt;&lt;/div&gt;
+
+There is still alot more I have to do with this... but as with all things... its a process
 
 I'll create a more understandable page with more examples but this will do for now...
 
