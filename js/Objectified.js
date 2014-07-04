@@ -25,22 +25,49 @@
         root = factory(root, factory, true);
     }
 }(this, function (globalObj, objectified, emulateDocumentBool){
-    var listOfValidProperties = ["tag","tagName","nodeName","childNodes","children","attributes"],
+    var listOfValidProperties = {
+            "tag":1,
+            "tagName":1,
+            "nodeName":1,
+            "childNodes":1,
+            "children":1,
+            "attributes":1
+        },
         failSilently = false,
-        emulateDocumentBool = emulateDocumentBool || false,
         renderingData;
+
+        emulateDocumentBool = emulateDocumentBool || false;
 
     //  UTILS
     function throwOne(text){
+
         if(failSilently){
-            if(console && console.log){
-                console.log(text);
-            }
+
+            console && console.log && console.log(text)
+
         } else {
+
             throw new Error(text);
+
         }
+
     }
     //  END UTILS
+
+    /**
+    * The method in which extends on DOM elements' events...
+    * @method addEventToElement
+    * @param {Object} REQUIRED - This is the object that you want to use to bind all the events to
+    * @return {Object}
+    */
+    function addEventToElement (onElementObj){
+
+        for(var i in onElementObj){
+            this["on"+i] = onElementObj[i];
+        }
+
+    }
+
 
     /**
     * The method in which extends on DOM elements' attributes...
@@ -85,19 +112,17 @@
                         case "innerHTML":
                             this[attr] = elementAttributesObj[attr];
                             break;
-
                         /*
                             I have this in a switch cause where I work at we depend on a polyfill to do
                             dataset and classList for us... I will write this myself
                         */
-                            break;
                         default:
                             // use the normal attribute and assign the attribute to it... example element.title or element.href
                             this.setAttribute(attr,elementAttributesObj[attr]);
                     }
 
                 }
-            }
+            };
 
         } else {
 
@@ -139,12 +164,7 @@
 
                 }
 
-                if(elementBindedDataAttributesObj){
-                    console.log(elementBindedDataAttributesObj)
-
-                }
-
-            }
+            };
 
         }
 
@@ -173,7 +193,7 @@
                 if(dataToBindRender.length){
 
 
-                    console.log(dataBindingObj, dataToBindRender)
+                    console.log(dataBindingObj, dataToBindRender);
 
 
                 } else {
@@ -266,7 +286,7 @@
 
                     if(createElementObj.dataBindedAttributes){
                         if(!createElementObj.attributes){
-                            createElementObj.attributes = {}
+                            createElementObj.attributes = {};
                         }
 
                         createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData);
@@ -276,6 +296,8 @@
 
                     //  if createElementObj exists the call extend with the element as the this
                     createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
+
+                    createElementObj.on && addEventToElement.call(element, createElementObj.on);
 
                     /*
                         if you have children (you can call then childNodes or children) loops through them and append each one to the
@@ -324,7 +346,7 @@
                             
                             if(createElementObj.dataBindedAttributes){
                                 if(!createElementObj.attributes){
-                                    createElementObj.attributes = {}
+                                    createElementObj.attributes = {};
                                 }
 
                                 createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData[i]); 
@@ -377,13 +399,11 @@
         for(var i in createElementObj){
             propsMethodsExist = true;
 
-            //  indexOf doesnt work in old IE god damn
-            for(var j=0; j<listOfValidProperties.length; j++){
-                if(listOfValidProperties[j] === i){
-                    validPropertiesExist = true;
-                    break;
-                }
+            if(listOfValidProperties[i]){
+                validPropertiesExist = true;
+                break;
             }
+
         }
 
         if(!propsMethodsExist){
@@ -413,6 +433,7 @@
         return containerFragment;
 
     }
+
 
 	objectified.name = "Objectified.js";
 	objectified.version = "0.7.3";
@@ -602,9 +623,6 @@
             createComment : function(){
                 return new psuedoFragment();
             },
-            createComment : function(){
-                return new psuedoFragment();
-            },
             createAttribute : function(){
                 return new psuedoFragment();
             },
@@ -621,7 +639,7 @@
 
     } else {
         objectified.render = render;
-        // objectified.extend = extendElement;        
+        // objectified.extend = extendElement;
     }
 
 

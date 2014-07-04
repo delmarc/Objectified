@@ -131,7 +131,7 @@
                 tag:"ul",
                 dataBind:["list"],
                 childrenDataHandling:{
-                    tagName : "li",
+                    tag : "li",
                     dataBindedAttributes : {
                         innerHTML : []
                     },
@@ -159,6 +159,79 @@
         document.body.appendChild( document.createElement("hr") );
 
         console.log("-----");
+
+        var sixthDropOffItem = Objectified.render({
+            tag:"header",
+            children:[{
+                tag:"p",
+                children:[{
+                    tag:"a",
+                    attributes:{
+                        innerHTML:"linky link"
+                    },
+                    dataBindedAttributes:{
+                        href:["header","link"]
+                    }
+                }]
+            },{
+                tag:"p",
+                dataBindedAttributes:{
+                    innerHTML:["text"]
+                }
+            }]
+        }, {
+            "header":{
+                "text":"another header text",
+                "link":"index2.html"
+            },
+            "list":[1,2,3,4],
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( sixthDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var firstFunctionBinding = Objectified.render({
+            tag:"header",
+            children:[{
+                tag:"p",
+                children:[{
+                    tag:"span",
+                    attributes:{
+                        innerHTML:"Oh shit"
+                    },
+                    dataBindedAttributes:{
+                        class:["header","some"]
+                    }
+                }]
+            },{
+                tag:"p",
+                dataBindedAttributes:{
+                    innerHTML:["text"]
+                }
+            }],
+            on:{
+                click: function(ev){
+                    console.log(this);
+                }
+            }
+        },{
+            "header":{
+                "text":"another header text",
+                "some":"data"
+            },
+            "list":[1,2,3,4],
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( firstFunctionBinding );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");        
 
     	</script>
 
