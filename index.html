@@ -25,7 +25,7 @@
         document.body.appendChild( document.createElement("hr") );
 
         console.log("-----");
-
+        /*
         var dropOffItem = Objectified.render({
             tag:"ul",
             dataBind:["home","about","test","contact us","love, peace &amp; chicken grease"],
@@ -65,6 +65,7 @@
         document.body.appendChild( document.createElement("hr") );
 
         console.log("-----");
+        */
 
         var secondOtherDropOffItem = Objectified.render({
             tag:"ul",
@@ -201,7 +202,7 @@
                 children:[{
                     tag:"span",
                     attributes:{
-                        innerHTML:"Oh shit"
+                        innerHTML:"Oh shit... you can click in here... and the on->click alerts..."
                     },
                     dataBindedAttributes:{
                         class:["header","some"]
@@ -215,7 +216,7 @@
             }],
             on:{
                 click: function(ev){
-                    console.log(this);
+                    alert(this);
                 }
             }
         },{

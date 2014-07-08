@@ -25,6 +25,21 @@
 		"Objectified"
 	],
 	"dependencies" : {
+		"gulp":"",
+		"gulp-browserify":"",
+		"gulp-concat":"",
+		"gulp-jshint":"",
+		"gulp-livereload":"",
+		"gulp-mocha":"",
+		"gulp-notify":"",
+		"gulp-open":"",
+		"gulp-rename":"",
+		"gulp-uglify":"",
+
+		"browserify":"",
+		"connect":"2.15.0",
+		"mocha":"",
+		"vinyl-source-stream":""
 	},
 	"analyze": false,
 	"devDependencies": {
