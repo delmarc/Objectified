@@ -8,7 +8,6 @@
     <body>
 
     	<script>
-        /*
     	document.body.appendChild(
             Objectified.render({
                 tag:"div",
@@ -31,11 +30,10 @@
         document.body.appendChild( document.createElement("hr") );
 
         console.log("-----");
-        */
 
         var fifthDropOffItem = Objectified.render({
             tag:"div",
-            children:[/*{
+            children:[{
                 tag:"h1",
                 dataBindedAttributes:{
                     innerHTML:["header","text"]
@@ -49,33 +47,17 @@
                         href:["header","link"]
                     }
                 }]
-            },*/{
-                tag:"ul",
-                dataBind:["list"],
-                attributes : {
-                    id:"container-list"
-                },
-                childrenDataHandling:{
-                    tag : "li",
-                    dataBindedAttributes : {
-                        innerHTML : []
-                    },
-                    attributes:{
-                        className : "menu-item"
-                    }
-                }
-            }/*,{
+            },{
                 tag:"p",
                 dataBindedAttributes:{
                     innerHTML:["text"]
                 }
-            }*/]
-        }, {
+            }]
+        },{
             "header":{
                 "text":"another header text",
                 "link":"#"
             },
-            "list":[1,2,3,4],
             "text":"well the p text"
         });
 
@@ -83,7 +65,65 @@
 
         document.body.appendChild( document.createElement("hr") );
 
-        console.log("-----");        
+        console.log("-----");
+
+        var sixthDropOffItem = Objectified.render({
+            tag:"div",
+            children:[{
+                tag:"p",
+                dataBindedAttributes:{
+                    innerHTML:["p","text"]
+                },
+                attributes:{
+                    style:{
+                        color:"#ff00ff",
+                        borderBottom:"1px solid #ff0000"
+                    }
+                }
+            }]
+        },{
+            "p":{
+                "text":"lorem ipsum text"
+            },
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( sixthDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
+
+        var seventhDropOffItem = Objectified.render({
+            tag:"div",
+            children:[{
+                tag:"p",
+                dataBindedAttributes:{
+                    innerHTML:["p","text"]
+                },
+                attributes:{
+                    style:{
+                        color:"#ff00ff",
+                        borderLeft:"1px solid #ff0000"
+                    },
+                    dataset:{
+                        hello:"mom",
+                        some:"fun"
+                    }
+                }
+            }]
+        },{
+            "p":{
+                "text":"lorem ipsum text"
+            },
+            "text":"well the p text"
+        });
+
+        document.body.appendChild( seventhDropOffItem );
+
+        document.body.appendChild( document.createElement("hr") );
+
+        console.log("-----");
 
     	</script>
 

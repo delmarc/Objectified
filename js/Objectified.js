@@ -83,10 +83,8 @@
            Objectified.extendElement.call(context, elementAttributesObj)
         */
 
-
-        /*@cc_on
-            console.log("yea buddy");
-        @*/
+        // should use this for IEs
+        ///*@cc_on!@*/false
 
         if( emulateDocumentBool || ( globalObj.attachEvent ) ){
 
@@ -102,9 +100,6 @@
                             for(var singleAttr in elementAttributesObj[attr]){
                                 this[attr][singleAttr] = elementAttributesObj[attr][singleAttr];
                             }
-
-
-
                             break;
                         case "className":
                             this.setAttribute("class",elementAttributesObj[attr]);
@@ -122,6 +117,7 @@
                     }
 
                 }
+
             };
 
         } else {
@@ -515,19 +511,24 @@
                 };
 
                 this.renderAllStyles = function(){
-                    var stylesString = "style=\"";
+                    var stylesBuildUp = "";
+
                     for(var i in self.style){
                         if(self.style[i] !== ""){
-                            stylesString += i+":"+self.style[i]+";";
+                            stylesBuildUp += i+":"+self.style[i]+";";
                         }
                     }
-                    stylesString += "\"";
 
-                    return stylesString;
+                    if(stylesBuildUp){
+                        stylesBuildUp = " style=\""+stylesBuildUp+"\""
+                    }
+
+                    return stylesBuildUp;
                 };
 
                 this.renderAllAttributes = function(){
                     var attrString = "";
+
                     for(var i in self.attributeList){
                         if(self.attributeList[i] !== ""){
                             attrString += " "+i+"=\""+self.attributeList[i]+"\"";
@@ -535,15 +536,27 @@
                             attrString += " "+i+"";
                         }
                     }
+
                     return attrString;
                 };
 
+                this.renderDataSet = function(){
+                    var dataSetBuildUp = "";
+
+                    for(var i in self.dataset){
+                        if(self.dataset[i] !== ""){
+                            dataSetBuildUp += " data-"+(i.replace(/([A-Z])/g, '-$1').toLowerCase())+"=\""+self.dataset[i]+"\"";
+                        }
+                    }
+
+                    return dataSetBuildUp;
+                };
+
                 this.renderSelf = function(){
-                    //console.log(self.renderAllStyles());
                     if(selfClosingElements[self.tagName]){
-                        return "<"+self.tagName+""+self.renderAllAttributes()+">";
+                        return "<"+self.tagName+""+self.renderAllAttributes()+""+self.renderAllStyles()+""+self.renderDataSet()+">";
                     } else {
-                        return "<"+self.tagName+""+self.renderAllAttributes()+">"+self.textContext+""+self.innerHTML+""+self.renderChildren()+"</"+self.tagName+">";
+                        return "<"+self.tagName+""+self.renderAllAttributes()+""+self.renderAllStyles()+""+self.renderDataSet()+">"+self.textContext+""+self.innerHTML+""+self.renderChildren()+"</"+self.tagName+">";
                     }
                 };
                 this.toString = function(){
