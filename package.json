@@ -1,6 +1,6 @@
 {
 	"name": "Objectified",
-	"version": "0.6.0",
+	"version": "0.7.5",
 	"author": "Delmarc Eric Rosario <delmarc@uneek1.com>",
 	"description": "A Real Pure JavaScript Template 'Engine'",
 	"contributors": [ 

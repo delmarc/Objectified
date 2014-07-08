@@ -5,14 +5,14 @@ This is an attempt in order to get people thinking about templating differently.
 
 
 ###### Objectified was started 12/27/13
-###### Current version - 0.7.3 - 6/25/14
+###### Current version - 0.7.5 - 7/8/14
 
 
 TODOS
 -----
 
 1. have to write it to work with all the different module types... I have only worked with browsers and straight node
-2. properly deal with dataset property... that is easy... this will also be working on the style object as well...
+2. ~~properly deal with dataset property... that is easy... this will also be working on the style object as well...~~ I think i got this right
 3. do the same with classList property... pretty easy too...
 4. work with iterating through an array... thru binding the data...
 
@@ -31,6 +31,19 @@ But still why???
 __Well__, there was a project that I had to start at work. Since I didnt want to use anything that already exists because I _partially_ hate them, this is what I did...
 
 
+Setup
+=====
+
+Umm... just do npm install... then do gulp... runs some tests while drawing a cat, then opens a server on 3001 and runs it... you can also run examples in node using the examples folder... so just go into that folder
+
+cd examples
+
+then run a js file like 
+
+node example.js or node example2.js
+
+
+
 Basic Examples
 ==============
 
@@ -41,16 +54,20 @@ First Example
 
 Its pretty simple to explain so here is the first example
 
+```javascript
 Objectified.render({
 	tagName:"p",
 	attributes:{
 		innerHTML:"some nice text"
 	}
 });
+```
 
 That will obviously produce what is below
 
-&lt;p&gt;some nice text&lt;/p&gt;
+```html
+<p>some nice text</p>
+```
 
 You can either edit straight on the innerHTML, textContent/innerText or even do what is below...
 
@@ -58,9 +75,9 @@ You can either edit straight on the innerHTML, textContent/innerText or even do 
 Second Example
 --------------
 
-Objectified.render({
-	tagName:"div",
-	attributes:{
+```javascript
+Objectified.render({tagName:"div",
+    attributes:{
 		id:"aNiceId"
 	},
 	childNodes:[{
@@ -76,15 +93,19 @@ Objectified.render({
 		tagName:"p",
 	}]
 });
+```
 
 That will obviously produce what is below
-
-&lt;div id="aNiceId"&gt;&lt;h1 class="someClass"&gt;some header text&lt;/h1&gt;&lt;/div&gt;
+```html
+<div id="aNiceId">
+    <h1 class="someClass">some header text</h1>
+</div>
+```
 
 
 Third Example
 --------------
-
+```javascript
 Objectified.render({
     tag:"div",
     children:[{
@@ -104,10 +125,17 @@ Objectified.render({
     },
     "text":"well the p text"
 });
+```
+
 
 The data object that is the second parameter is used to populate the template from the first parameter...
 
-&lt;div&gt;&lt;h1&gt;some bull that is a h1&lt;/h1&gt;&lt;p&gt;well the p text&lt;/p&gt;&lt;/div&gt;
+```html
+<div>
+    <h1>some bull that is a h1</h1>
+    <p>well the p text</p>
+</div>
+```
 
 There is still alot more I have to do with this... but as with all things... its a process
 

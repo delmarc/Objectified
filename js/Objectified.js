@@ -432,7 +432,7 @@
 
 
 	objectified.name = "Objectified.js";
-	objectified.version = "0.7.3";
+	objectified.version = "0.7.5";
 
 	objectified.atTheTime = {
 		song : "Bastard Child",
