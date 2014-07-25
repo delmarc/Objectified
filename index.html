@@ -20,9 +20,24 @@
     			}
     		};
 
-    	document.body.appendChild(Objectified.render({tag:"div",children:[{tag:"p",attributes:{className:"yea",innerHTML:"OK",style:{color:"#ff0000"}}}]}));
+    	document.body.appendChild(
+            Objectified.render({
+                tag:"div",
+                children:[{
+                    tag:"p",
+                    attributes:{
+                        className:"yea",
+                        innerHTML:"OK",
+                        style:{
+                            color:"#ff0000"
+                        }
+                    }
+                }]
+            })
+        );
 
         document.body.appendChild( document.createElement("hr") );
+        
 
         console.log("-----");
         /*

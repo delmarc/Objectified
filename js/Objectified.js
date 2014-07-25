@@ -43,7 +43,7 @@
 
         if(failSilently){
 
-            console && console.log && console.log(text)
+            console && console.log && console.log(text);
 
         } else {
 
@@ -128,7 +128,7 @@
                 for(var attr in elementAttributesObj){
 
                     // checking if the attr in question is a normal attribute of said DOM element...
-                    if( this.hasOwnProperty(attr) ){
+                    if( this.hasOwnProperty(attr) || attr in this ){
                         // yea??? then add through usual conventions on the DOM...
 
                         switch(attr){
