@@ -4,7 +4,7 @@
 * @namespace window.Objectified
 */
 
-(function (root, factory){
+;(function (root, factory){
     if(root.navigator){
         if (typeof exports === "object" && exports) {
             // CommonJS
@@ -391,6 +391,12 @@
 
         var propsMethodsExist = false,
             validPropertiesExist = false;
+
+        if(createElementObj.length){
+            console.log("have to be able to have createElementObj be an array to... this is next")
+            return null
+
+        }
 
         for(var i in createElementObj){
             propsMethodsExist = true;
