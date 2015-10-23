@@ -1,12 +1,12 @@
 {
 	"name": "Objectified",
-	"version": "0.7.5",
+	"version": "0.9.0",
 	"author": "Delmarc Eric Rosario <delmarc@uneek1.com>",
 	"description": "A Real Pure JavaScript Template 'Engine'",
 	"contributors": [ 
 		{
-		"name": "Delmarc Eric Rosario",
-		"email": "delmarc@uneek1.com"
+			"name": "Delmarc Eric Rosario",
+			"email": "delmarc@uneek1.com"
 		} 
 	],
 	"bin": {
@@ -25,21 +25,34 @@
 		"Objectified"
 	],
 	"dependencies" : {
-		"gulp":"",
-		"gulp-browserify":"",
-		"gulp-concat":"",
-		"gulp-jshint":"",
-		"gulp-livereload":"",
-		"gulp-mocha":"",
-		"gulp-notify":"",
-		"gulp-open":"",
-		"gulp-rename":"",
-		"gulp-uglify":"",
-
-		"browserify":"",
-		"connect":"2.15.0",
-		"mocha":"",
-		"vinyl-source-stream":""
+		"browser-sync": "^2.8.2",
+		"browserify": "",
+		"chai": "^3.0.0",
+		"connect": "2.15.0",
+		"gulp": "",
+		"gulp-browserify": "",
+		"gulp-concat": "",
+		"gulp-concat-css": "^2.0.0",
+		"gulp-file": "^0.2.0",
+		"gulp-if": "^1.2.5",
+		"gulp-jshint": "",
+		"gulp-livereload": "",
+		"gulp-minify-html": "^1.0.2",
+		"gulp-mocha": "",
+		"gulp-notify": "",
+		"gulp-open": "",
+		"gulp-phantom": "0.0.6",
+		"gulp-rename": "",
+		"gulp-stylus": "^2.0.0",
+		"gulp-uglify": "",
+		"gulp-util": "^3.0.1",
+		"gulp-watch": "^3.0.0",
+		"gulp-webdriver": "^0.1.1",
+		"minimist": "^1.1.3",
+		"mocha": "",
+		"vinyl-source-stream": "",
+		"webdriverjs": "^1.7.5",
+		"yargs": "^3.18.0"
 	},
 	"analyze": false,
 	"devDependencies": {

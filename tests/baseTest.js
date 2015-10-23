@@ -1,5 +1,6 @@
-var assert = require("assert");
-var Objectified = require("../js/Objectified.js"),
+var assert = require("assert"),
+
+	Objectified = require("../built/Objectified.min.js"),
 	publicMethodCount;
 
 function toErIsHuman(){

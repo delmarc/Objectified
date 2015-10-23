@@ -1,5 +1,6 @@
 var assert = require("assert"),
-	Objectified = require("../js/Objectified.js"),
+
+	Objectified = require("../built/Objectified.min.js"),
 //	These below are used for testing purposes...
 	invalidObject = {
 		asdf:{}

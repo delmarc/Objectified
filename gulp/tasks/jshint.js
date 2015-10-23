@@ -3,7 +3,7 @@ var gulp = require('gulp'),
 
 // Lint JS
 gulp.task('lint', function() {
-  return gulp.src('js/*.js')
+  return gulp.src('./dev/**/*.js')
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });

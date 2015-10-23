@@ -7,7 +7,13 @@ gulp.task('watch', function() {
 			server.changed(file.path);
 		};
 
-	gulp.watch('tests/*.js', ['mocha']);
-	gulp.watch('js/**', ['browserify','lint','mocha']);
-	gulp.watch(['build/**']).on('change', reload);
+	gulp.watch('./tests/*.js', ['mocha']);
+	gulp.watch('./dev/*.js', [
+		'objectifiedAll',
+		'objectifiedClientOnly',
+		'objectifiedNodeOnly',
+		'lint',
+		'mocha'
+	]);
+	gulp.watch('./built/**').on('change', reload);
 });

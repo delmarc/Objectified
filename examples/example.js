@@ -4,46 +4,8 @@
 
 */
 
-var Objectified = require("../js/Objectified.js");
+var Objectified = require("../static/js/Objectified.js");
 
-/*
-console.log("doing the fullon render", Objectified.render({
-		tag:"ul",
-		dataBind:dataObj,
-		childrenDataHandling:{
-			tagName : "li"*,
-			innerHTML : dataObj.list*
-		}
-	},{	
-		list : ["home","about","test","contact us","love, peace &amp; chicken grease"]
-	}));
-*/
-
-
-/*
-console.log("doing the fullon render", Objectified.render({
-	tag:"html",
-	attributes:{
-		"data-yes":null,
-		"data-yea":"",
-		"className":"yeaboy"
-	}
-}) );
-*/
-
-/*
-console.log("doing the fullon render", Objectified.render({
-	tag:"div",
-	attributes:{
-		"data-yes":null,
-		"data-yea":"",
-		"className":"yeaboy"
-	}
-}) );
-*/
-//console.log("doing the fullon render", Objectified.render({tag:"div"}) );
-
-//console.log("doing the fullon render", Objectified.render({tag:"hr"}) );
 
 console.log("doing the fullon render", Objectified.render({
 		tag:"div",

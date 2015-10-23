@@ -4,6 +4,7 @@
 * @namespace window.Objectified
 */
 
+
 ;(function (root, factory){
     if(root.navigator){
         if (typeof exports === "object" && exports) {
@@ -118,6 +119,8 @@
 
                 }
 
+                return this;
+
             };
 
         } else {
@@ -160,6 +163,8 @@
 
                 }
 
+                return this;
+
             };
 
         }
@@ -180,19 +185,18 @@
 
         switch(typeof dataToBindRender){
             case "string":
+                console.log("binding from a string");
                 for(var i in dataBindingObj){
                     this[i] = dataToBindRender;
                 }
                 break;
             case "object":
-
+                console.log("binding from a Object");
                 if(dataToBindRender.length){
-
-
-                    console.log(dataBindingObj, dataToBindRender);
-
+                    console.log("binding from a Object array", dataBindingObj, dataToBindRender);
 
                 } else {
+                    console.log("binding from more proper Object", dataBindingObj, dataToBindRender);
 
                     for(var i in dataBindingObj){
                         var referenceObj = dataToBindRender,
@@ -211,6 +215,8 @@
                 break;
         }
 
+        return this;
+
     }
 
 
@@ -226,142 +232,209 @@
         if(typeof createElementObj === "object"){
 
             if(createElementObj.length){
+                console.log(createElementObj, renderingData, "I get here");
 
-                // odds is you gave me an array... and I dont want those...
-                return throwOne("This is an object with a length attribute aka most likely an array and I dont want those... either you passed an array or you name your attributes weirdly...");
+                if(createElementRenderingData){
+                    // parse thru the object
+                } else {
+                    if(renderingData){
+                        console.log("do something with this", createElementObj, renderingData)
 
-            }
-
-            var element,
-                elementName,
-                containerElementName,
-                children,
-                nodeText;
-
-            if(!createElementRenderingData){
-
-                //console.log(createElementObj, createElementRenderingData)
-
-                if(createElementObj.nodeType && createElementObj.nodeType !== 1){
-
-                    switch(createElementObj.nodeType){
-                        case 3: // textNode
-                            if( (nodeText = createElementObj.text) && typeof createElementObj.text === "string" ){
-                                element = d.createTextNode(nodeText);
-                            } else {
-                                return throwOne("You specified a text node but you didnt give me a string for the text");
-                            }
-                            break;
-                        /*
-                        working on this
-                        case 8: // comment
-                            if(nodeText = createElementObj.commentText || createElementObj.text){
-                                element = document.createComment(nodeText);
-                            } else {
-                                return throwOne("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
-                            }
-                            break;
-                        case 2: // attribute
-                            break;
-                        case 11: // docFrag
-                            element = document.createDocumentFragment();
-                            break;
-                        */
+                        return document.createTextNode()
+                    } else {
+                        // odds is you gave me an array but didnt give me the data to parse through... and I dont want those...
+                        return throwOne("This is an object with a length attribute aka most likely an array and I dont want those...");
                     }
-
-                } else if(createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) {
-
-                    elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
-
-                    if(typeof elementName !== "string" && elementName !== undefined){
-                        return throwOne("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
-                    }
-
-                    //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
-                    element = d.createElement(elementName || "div");
-
-                    if(createElementObj.dataBindedAttributes){
-                        if(!createElementObj.attributes){
-                            createElementObj.attributes = {};
-                        }
-
-                        createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData);
-                    }
-
-                    //  console.log(createElementObj);
-
-                    //  if createElementObj exists the call extend with the element as the this
-                    createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
-
-                    createElementObj.on && addEventToElement.call(element, createElementObj.on);
-
-                    /*
-                        if you have children (you can call then childNodes or children) loops through them and append each one to the
-                        created element in question...
-                    */
-
-                    if(createElementObj.childNodes || createElementObj.children){
-                        //  and since we do, cache the object
-                        children = createElementObj.childNodes || createElementObj.children;
-
-                        for(var i=0;i<children.length;i++){
-                            /*
-                                cycle through the children and recursively call createElement on those child nodes which can go
-                                forever and ever and ever and ever...
-                            */
-                            element.appendChild( createElement(children[i]) );
-                        }
-                    } else if(createElementObj.childrenDataHandling){
-                        //console.log("in this instance", element, createElementObj);
-                        element.appendChild( createElement(createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData) );
-                    }
-
                 }
-
-                return element;
 
             } else {
 
-                var dataArrayCount;
+                var element,
+                    elementName,
+                    containerElementName,
+                    children,
+                    nodeText;
 
-                //console.log("Now in this one ", createElementObj, createElementRenderingData);
+                if(!createElementRenderingData){
 
-                containerElementName = document.createDocumentFragment();
+                    //console.log(createElementObj, createElementRenderingData)
 
-                // i have the data
-                if(typeof createElementRenderingData === "object"){
+                    if(createElementObj.nodeType && createElementObj.nodeType !== 1){
 
-                    if( dataArrayCount = createElementRenderingData.length){
-
-                        //console.log("in here ok", createElementRenderingData);
-                        for(var i = 0;i<dataArrayCount;i++){
-
-                            elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
-
-                            element = d.createElement(elementName || "div");
-                            
-                            if(createElementObj.dataBindedAttributes){
-                                if(!createElementObj.attributes){
-                                    createElementObj.attributes = {};
+                        switch(createElementObj.nodeType){
+                            case 3: // textNode
+                                if( (nodeText = createElementObj.text) && typeof createElementObj.text === "string" ){
+                                    element = d.createTextNode(nodeText);
+                                } else {
+                                    return throwOne("You specified a text node but you didnt give me a string for the text");
                                 }
+                                break;
+                            /*
+                            working on this
+                            case 8: // comment
+                                if(nodeText = createElementObj.commentText || createElementObj.text){
+                                    element = document.createComment(nodeText);
+                                } else {
+                                    return throwOne("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
+                                }
+                                break;
+                            case 2: // attribute
+                                break;
+                            case 11: // docFrag
+                                element = document.createDocumentFragment();
+                                break;
+                            */
+                        }
 
-                                createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData[i]); 
+                    } else if(createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) {
+
+                        elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
+
+                        if(typeof elementName !== "string" && elementName !== undefined){
+                            return throwOne("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
+                        }
+
+                        //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
+                        element = d.createElement(elementName || "div");
+
+                        if(createElementObj.dataBindedAttributes){
+                            if(!createElementObj.attributes){
+                                createElementObj.attributes = {};
                             }
 
-                            createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
+                            console.log("THIS WAS ADDED", element)
 
-                            containerElementName.appendChild(element);
+                            createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData);
+
+                            element.bitching = true;
+                            element.dataBindedAttributes = createElementObj.dataBindedAttributes;
+                            element.bindedAttributesMapping = function(){
+                                console.log(this,"ok cool", arguments);
+                            };
+
+                        }
+
+                        //  console.log(createElementObj);
+
+                        //  if createElementObj exists the call extend with the element as the this
+                        createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
+
+                        createElementObj.on && addEventToElement.call(element, createElementObj.on);
+
+                        /*
+                            if you have children (you can call then childNodes or children) loops through them and append each one to the
+                            created element in question...
+                        */
+
+                        if(createElementObj.childNodes || createElementObj.children){
+                            //  and since we do, cache the object
+                            children = createElementObj.childNodes || createElementObj.children;
+
+                            for(var i=0;i<children.length;i++){
+                                /*
+                                    cycle through the children and recursively call createElement on those child nodes which can go
+                                    forever and ever and ever and ever...
+                                */
+                                element.appendChild( createElement(children[i]) );
+                            }
+                        } else if(createElementObj.childrenDataHandling){
+                            console.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
+
+                            if(createElementObj.childrenDataHandling.length){
+                                console.log("up in here");
+                                for(var i=0;i<createElementObj.childrenDataHandling.length;i++){
+                                    console.log(createElementObj.childrenDataHandling[i]);
+                                }
+                                element.appendChild( createElement(createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData) );
+                            } else {
+                                var dataToLoop = createElementObj.dataBind || renderingData,
+                                    instanceElement,
+                                    instanceDataBinded;
+
+                                console.log("fall into here", createElementObj, dataToLoop);
+
+                                instanceDataBinded = createElementObj.childrenDataHandling.dataBindedAttributes && bindAttributes.call({}, createElementObj.childrenDataHandling.dataBindedAttributes, dataToLoop);
+
+                                for(var i in instanceDataBinded){
+                                    console.log(i)
+
+                                    for(var j=0;j<instanceDataBinded[i].length;j++){
+
+                                        var childElement = d.createElement(createElementObj.childrenDataHandling.tagName || createElementObj.childrenDataHandling.tag || createElementObj.childrenDataHandling.nodeName || "div");
+
+                                        if(createElementObj.childrenDataHandling.dataBindedAttributes){
+                                            if(!createElementObj.childrenDataHandling.attributes){
+                                                createElementObj.childrenDataHandling.attributes = {};
+                                            }
+                                        }
+
+                                        createElementObj.childrenDataHandling.attributes && extendElement.call(childElement, createElementObj.childrenDataHandling.attributes);
+
+                                        childElement[i] = instanceDataBinded[i][j];
+
+                                        element.appendChild( childElement );
+
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                    }
+
+                    return element;
+
+                } else {
+
+                    var dataArrayCount;
+
+                    //console.log("Now in this one ", createElementObj, createElementRenderingData);
+
+                    containerElementName = document.createDocumentFragment();
+
+                    // i have the data
+                    if(typeof createElementRenderingData === "object"){
+
+                        if( dataArrayCount = createElementRenderingData.length){
+
+                            console.log("in here ok", createElementRenderingData);
+                            for(var i = 0;i<dataArrayCount;i++){
+
+                                elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
+
+                                element = d.createElement(elementName || "div");
+                                
+                                if(createElementObj.dataBindedAttributes){
+                                    if(!createElementObj.attributes){
+                                        createElementObj.attributes = {};
+                                    }
+
+                                    createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData[i]); 
+                                }
+
+                                createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
+
+                                containerElementName.appendChild(element);
+                            }
+                        } else {
+                            console.log("I am in this instance... given an object", createElementRenderingData);
+
                         }
                     } else {
-                        console.log("I am in this instance... given an object");
+                        console.log("what the fuck am I dealing with here");
                     }
-                } else {
-                    console.log("what the fuck am I dealing with here");
+
+                    return containerElementName;
+
                 }
 
-                return containerElementName;
 
             }
+
+        } else if(typeof createElementObj === "string") {
+
+            return d.createTextNode(createElementObj)
 
         } else {
 
@@ -438,7 +511,7 @@
 
 
 	objectified.name = "Objectified.js";
-	objectified.version = "0.7.5";
+	objectified.version = "0.8.0";
 
 	objectified.atTheTime = {
 		song : "Bastard Child",
