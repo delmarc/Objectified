@@ -10,7 +10,16 @@ gulp.task('objectifiedAll', function() {
 		'./dev/modules/Objectified-node-module.js'
 		])
 		.pipe(concat("Objectified.min.js"))
-		.pipe(uglify())
+		//.pipe(uglify())
+		.pipe(gulp.dest('./built/'));
+});
+
+gulp.task('objectifiedContainer', function() {
+	return gulp.src([
+		'./dev/Objectified-main.js'
+		])
+		.pipe(concat("Objectified-container.min.js"))
+		//.pipe(uglify())
 		.pipe(gulp.dest('./built/'));
 });
 
@@ -20,7 +29,7 @@ gulp.task('objectifiedClientOnly', function() {
 		'./dev/modules/Objectified-client-module.js'
 		])
 		.pipe(concat("Objectified-client.min.js"))
-		.pipe(uglify())
+		//.pipe(uglify())
 		.pipe(gulp.dest('./built/'));
 });
 
@@ -30,6 +39,6 @@ gulp.task('objectifiedNodeOnly', function() {
 		'./dev/modules/Objectified-node-module.js'
 		])
 		.pipe(concat("Objectified-node.min.js"))
-		.pipe(uglify())
+		//.pipe(uglify())
 		.pipe(gulp.dest('./built/'));
 });

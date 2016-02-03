@@ -9,19 +9,14 @@
     <body>
 
     	<script>
-        var instance = Objectified.init({
-            "attributeMapping":{
-                "iH":"innerHTML",
-                "c":"className",
-                "S":{
-                    "border":"1px solid #ff0000"
-                }
-            }
-        }).DOM.render({
+        var instance = Objectified.init().DOM.render({
             "tagName":"p",
             "attributes":{
-                "c":"someClass",
-                "iH":"hello"
+                "className":"someClass",
+                "innerHTML":"hello",
+                "style":{
+                    "border":"1px solid #ff0000"
+                }
             }
         });
 

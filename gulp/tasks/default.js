@@ -1,12 +1,13 @@
 var gulp = require('gulp');
 
 gulp.task('default', [
-	'lint',
+//	'lint',
+	'objectifiedContainer',
 	'objectifiedAll',
 	'objectifiedClientOnly',
 	'objectifiedNodeOnly',
-	'mocha',
+//	'mocha',
 	'watch',
-	'serve',
-	'open'
+	'serve'
+//	'open'
 ]);
