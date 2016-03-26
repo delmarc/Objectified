@@ -3,29 +3,50 @@
     <head>
         <meta charset="utf-8" />
         <title>Objectified</title>
-        <!--script src="/built/Objectified-container.min.js"></script-->
-        <script src="/built/Objectified-client.min.js"></script>
+        <script src="/built/Objectified-container.min.js"></script>
+        <!--script src="/built/Objectified-client.min.js"></script-->
     </head>
     <body>
 
     	<script>
-        var instance = Objectified.init({
+        var O = Objectified({
             "attributeMapping":{
                 "iH":"innerHTML",
                 "c":"className",
-                "S":{
-                    "border":"1px solid #ff0000"
-                }
-            }
-        }).DOM.render({
-            "tagName":"p",
-            "attributes":{
-                "c":"someClass",
-                "iH":"hello"
+                "i":"id",
+                "S":"style"
             }
         });
 
-        console.log(instance);
+        var OH = Objectified({
+            "attributeMapping":{
+                "iH":"innerHTML"
+            }
+        });
+
+        /*
+
+        document.body.appendChild(O.DOM.render({
+            "tagName":"header",
+            "attributes":{
+                "c":"someClass",
+                "i":"header",
+                "S":{
+                    "border":"1px solid #ff0000"
+                }
+            },
+            dataBindedAttributes:{
+                innerHTML:["some","text"]
+            }
+        },{
+            "header":"text in a header",
+            "some":{
+                "text":"yea boy"
+            }
+        }));
+
+        */
+
     	</script>
 
     </body>

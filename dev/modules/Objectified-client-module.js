@@ -4,8 +4,9 @@
 * @namespace window.Objectified
 */
 
-;var Objectified = (function(globalObj){
+;var Objectified = (function(globalObj, undefined){
     // "this" is the objectified object most likely
+
     var _this = this,
         doc,
         listOfValidProperties = {
@@ -42,17 +43,14 @@
            Objectified.extendElement.call(context, elementAttributesObj)
         */
 
-        var extendElement,
+        var __this = this,
+            extendElement,
             attributeMappingObj = _this.objectifiedProperties && !!_this.objectifiedProperties.attributeMapping ? _this.objectifiedProperties.attributeMapping : null,
             utilizeMapping = !!attributeMappingObj,
             attrInstance;
 
-        // should use this for IEs getting rid of old IE for now
-        ///*@cc_on!@*/false
-
-        //if( globalObj.attachEvent ){
-
         extendElement = function(elementAttributesObj, elementBindedDataAttributesObj){
+            var ___this = this;
 
             // cycle through all the attributes of passed objects
             for(var attr in elementAttributesObj){
@@ -64,7 +62,7 @@
                 }
 
                 // checking if the attr in question is a normal attribute of said DOM element...
-                if( this.hasOwnProperty(attrInstance) || attrInstance in this ){
+                if( ___this.hasOwnProperty(attrInstance) || attrInstance in ___this ){
                     // yea??? then add through usual conventions on the DOM...
 
                     switch(attrInstance){
@@ -75,7 +73,7 @@
                                 dataset and classList for us... I will write this myself
                             */
                             for(var singleAttr in elementAttributesObj[attrInstance]){
-                                this[attrInstance][singleAttr] = utilizeMapping ? elementAttributesObj[attrInstance][singleAttr] : elementAttributesObj[attr][singleAttr];
+                                ___this[attrInstance][singleAttr] = utilizeMapping ? elementAttributesObj[attrInstance][singleAttr] : elementAttributesObj[attr][singleAttr];
                             }
                             break;
                         case "innerHTML":
@@ -83,27 +81,27 @@
                                 I have this in a switch cause where I work at we depend on a polyfill to do
                                 dataset and classList for us... I will write this myself
                             */
-                            this.innerHTML = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
+                            ___this.innerHTML = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
                             break;
                         default:
                             // use the normal attribute and assign the attribute to it... example element.title or element.href
-                            this[attrInstance] = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
+                            ___this[attrInstance] = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
                     }
 
                 } else {
 
                     // this is when a custom attribute is passed to the specific element
-                    this.setAttribute( ( utilizeMapping ? attributeMappingObj[attr] : attr ), elementAttributesObj[attr] );
+                    ___this.setAttribute( ( utilizeMapping ? attributeMappingObj[attr] : attr ), elementAttributesObj[attr] );
 
                 }
 
             }
 
-            return this;
+            return ___this;
 
         };
 
-        extendElement.call(this, elementAttributesObj, elementBindedDataAttributesObj);
+        extendElement.call(__this, elementAttributesObj, elementBindedDataAttributesObj);
 
     }
 
@@ -133,6 +131,8 @@
                 } else {
                     console.log("binding from more proper Object", dataBindingObj, dataToBindRender);
 
+                    console.log("I need to check mapping",attributeMappingObj);
+
                     for(var i in dataBindingObj){
                         var referenceObj = dataToBindRender,
                             accessArray = dataBindingObj[i],
@@ -157,7 +157,7 @@
 
     /**
     * The common factory(like) DOM creator method which returns the newly created element
-    * @namespace window.Objectified
+    * @namespace window.Objectified.DOM
     * @method createElement
     * @param {Object} REQUIRED - The desired DOM element with tagName and optional attributes and childNodes/children
     * @return {Object}
@@ -237,10 +237,12 @@
                                 createElementObj.attributes = {};
                             }
 
-                            console.log("THIS WAS ADDED", element)
+                            console.log("THIS WAS ADDED", element);
 
                             createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData);
 
+
+                            console.log()
                             element.bitching = true;
                             element.dataBindedAttributes = createElementObj.dataBindedAttributes;
                             element.bindedAttributesMapping = function(){
@@ -253,8 +255,6 @@
 
                         //  if createElementObj exists the call extend with the element as the this
                         createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
-
-                        createElementObj.on && addEventToElement.call(element, createElementObj.on);
 
                         /*
                             if you have children (you can call then childNodes or children) loops through them and append each one to the
@@ -383,7 +383,7 @@
 
     /**
     * This is basically mapped to the only public function/method within the objectified framework...
-    * @namespace window.Objectified
+    * @namespace window.Objectified.DOM
     * @method render
     * @param {Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
     * @return {Object}
@@ -445,10 +445,30 @@
 
     }
 
+
+    /**
+    * This is basically mapped to the only public function/method within the objectified framework...
+    * @namespace window.Objectified.DOM
+    * @method place
+    * @param {string|Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
+    * @return {Object}
+    */
+    function place (idToPlaceORDomObjectToPlace) {
+
+    }
+
+    console.log(_this);
+    console.log(_this.prototype);
+
+    debugger;
+
+    /*
     _this.DOM = {
         render : render,
-        extendElement : extendElement
+        extendElement : extendElement,
+        place : render,
     }
+    */
 
     return _this;
 

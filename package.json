@@ -12,6 +12,7 @@
 	"bin": {
 	},
 	"scripts": {
+		"buildThisBitch":"gulp"
 	},
 	"main": "",
 	"repository": {

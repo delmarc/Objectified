@@ -4,37 +4,9 @@
 * @namespace window.Objectified
 */
 
-;var Objectified = ( function(globalObj) {
+;var Objectified = ( function(globalObj, undefined) {
 
-    var baseObjectifiedObj = {};
-
-    function objectifiedInstance(propertyObj){
-
-        this.objectifiedProperties = propertyObj || null;
-
-        this.UTILS = {
-            error:{
-                throwOne : throwOne
-            }
-        }
-
-        return this;
-
-    }
-
-    objectifiedInstance.prototype.UTILS = {
-        error:{
-            throwOne : throwOne
-        }
-    }
-
-    objectifiedInstance.prototype.objectifiedProperties = {
-        baseVersion:"0.8.1",
-        atTheTime:{
-            song : "Bastard Child",
-            artist : "Master P"
-        }
-    }
+    var _this = this;
 
     //  start privates
     function throwOne(text){
@@ -51,28 +23,70 @@
 
     }
 
-    function extend(propertyToSet, propertyValue){
+    function extend(propertyToSet, propertyValue, onPrototype){
 
         var _self = this;
 
-        _self[propertyToSet] = propertyValue;
+        if(onPrototype){
+
+            _self.prototype[propertyToSet] = propertyValue;
+
+        } else {
+
+            _self[propertyToSet] = propertyValue;
+
+        }
 
         return _self;
 
     }
     //  end privates
 
+    function whatAmI(){
 
-    return {
+        return this.prototype;
 
-        init : function(propertyObj){
+    };
 
-            objectifiedInstance.call(this, propertyObj);
 
-            return this;
+    function objectifiedInstance(propertyObj){
+
+        this.instanceProperties = propertyObj;
+
+        return /* just */ this;
+
+    }
+
+    function init(initPropertyObj){
+
+        //var instance = 
+
+        if(initPropertyObj){
+
+            objectifiedInstance.UTILS.extend.call(_this, "instanceProperties", initPropertyObj);
 
         }
 
-    };
+        return objectifiedInstance;
+
+    }
+
+
+    objectifiedInstance.prototype.UTILS = {
+        extend : extend,
+        error:{
+            throwOne : throwOne
+        }
+    }
+
+    objectifiedInstance.prototype.objectifiedProperties = {
+        baseVersion:"0.8.1",
+        atTheTime:{
+            song : "Bastard Child",
+            artist : "Master P"
+        }
+    }
+
+    return init(initPropertyObj);
 
 }).call(Objectified || null, window);
