@@ -3,28 +3,70 @@
     <head>
         <meta charset="utf-8" />
         <title>Objectified</title>
-        <script src="/built/Objectified-container.min.js"></script>
-        <!--script src="/built/Objectified-client.min.js"></script-->
+        <!--script src="/built/Objectified-container.min.js"></script-->
+        <script src="/built/Objectified-client.min.js"></script>
     </head>
     <body>
 
     	<script>
-        var O = Objectified({
-            "attributeMapping":{
-                "iH":"innerHTML",
-                "c":"className",
-                "i":"id",
-                "S":"style"
+        var O = Objectified.init({
+            "modulePropertiesObject":{
+                "render":{
+                    "attributeMapping":{
+                        "iH":"innerHTML",
+                        "c":"className",
+                        "i":"id",
+                        "S":"style"
+                    }
+                }
             }
         });
 
-        var OH = Objectified({
-            "attributeMapping":{
-                "iH":"innerHTML"
+        var OH = Objectified.init({
+            "modulePropertiesObject":{
+                "render":{
+                    "attributeMapping":{
+                        "iH":"innerHTML"
+                    }
+                }
             }
         });
+
+        console.log(O.render({
+            "tagName":"header",
+            "attributes":{
+                "c":"someClass",
+                "i":"header",
+                "iH":"INNER STUFF",
+                "S":{
+                    "border":"1px solid #ff0000"
+                }
+            }
+        }));
+
+        console.log(OH.render({
+            "tagName":"article",
+            "attributes":{
+                "className":"anotherClass",
+                "id":"mofo",
+                "iH":"ARTICLE STUFF",
+                "style":{
+                    "border":"1px solid #ff00ff"
+                }
+            }
+        }));
 
         /*
+        document.body.appendChild(O.render({
+            "tagName":"header",
+            "attributes":{
+                "c":"someClass",
+                "i":"header",
+                "S":{
+                    "border":"1px solid #ff0000"
+                }
+            }
+        }));
 
         document.body.appendChild(O.DOM.render({
             "tagName":"header",
@@ -44,7 +86,6 @@
                 "text":"yea boy"
             }
         }));
-
         */
 
     	</script>

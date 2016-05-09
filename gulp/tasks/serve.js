@@ -1,7 +1,7 @@
-var connect = require('connect');
-var gulp    = require("gulp");
-var http    = require('http');
-var config  = require('../config');
+var connect = require('connect'),
+	gulp = require("gulp"),
+	http = require('http'),
+	config = require('../config');
 
 gulp.task('serve', function(){
 	var app = connect()

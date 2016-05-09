@@ -12,8 +12,14 @@ gulp.task('watch', function() {
 		'objectifiedContainer',
 		'objectifiedAll',
 		'objectifiedClientOnly',
-		'objectifiedNodeOnly'
-		//'lint'
+		'objectifiedNodeOnly',
+
+		'objectifiedContainerMin',
+		'objectifiedAllMin',
+		'objectifiedClientOnlyMin',
+		'objectifiedNodeOnlyMin',
+
+		'lint'
 		//'mocha'
 	]);
 	//gulp.watch('./built/**').on('change', reload);

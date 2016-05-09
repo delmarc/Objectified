@@ -4,9 +4,12 @@
 * @namespace window.Objectified
 */
 
-
 ;var Objectified = (function(objectified,win){
-    var doc,
+
+    "use strict";
+    
+    var _this = this,
+        doc,
         UTILS,
         listOfValidProperties = {
             "tag":1,

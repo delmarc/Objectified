@@ -5,7 +5,8 @@
 */
 
 ;var Objectified = (function(globalObj, undefined){
-    // "this" is the objectified object most likely
+
+    "use strict";
 
     var _this = this,
         doc,
@@ -16,7 +17,8 @@
             "childNodes":1,
             "children":1,
             "attributes":1
-        };
+        },
+        prototypeUTILS = _this.prototype.UTILS;
 
     // if its null then something aint right
     if(_this === null){
@@ -35,7 +37,7 @@
     * @param {Object} REQUIRED - This is the object that you want to use to extend the context's attribute
     * @return {Object}
     */
-    function extendElement (elementAttributesObj, elementBindedDataAttributesObj){
+    function extendElement (elementToExtend, elementAttributesObj, elementBindedDataAttributesObj){
         /*
            so with this I am basically maping what the context of the function is... normally or more what i consider
            normally is that this function will be executed like below
@@ -45,63 +47,56 @@
 
         var __this = this,
             extendElement,
-            attributeMappingObj = _this.objectifiedProperties && !!_this.objectifiedProperties.attributeMapping ? _this.objectifiedProperties.attributeMapping : null,
+            attributeMappingObj = __this.objectifiedInstancePropertyObject && !!__this.objectifiedInstancePropertyObject.attributeMapping ? __this.objectifiedInstancePropertyObject.attributeMapping : null,
             utilizeMapping = !!attributeMappingObj,
             attrInstance;
 
-        extendElement = function(elementAttributesObj, elementBindedDataAttributesObj){
-            var ___this = this;
+        // cycle through all the attributes of passed objects
+        for(var attr in elementAttributesObj){
 
-            // cycle through all the attributes of passed objects
-            for(var attr in elementAttributesObj){
+            if( utilizeMapping && attributeMappingObj[attr] ){
+                attrInstance = attributeMappingObj[attr];
+            } else {
+                attrInstance = attr;
+            }
 
-                if( utilizeMapping && attributeMappingObj[attr] ){
-                    attrInstance = attributeMappingObj[attr];
-                } else {
-                    attrInstance = attr;
+            // checking if the attr in question is a normal attribute of said DOM element...
+            if( elementToExtend.hasOwnProperty(attrInstance) || attrInstance in elementToExtend ){
+                // yea??? then add through usual conventions on the DOM...
+
+                prototypeUTILS.log(attrInstance);
+
+                switch(attrInstance){
+                    case "style":
+                    case "dataset":
+                        /*
+                            I have this in a switch cause where I work at we depend on a polyfill to do
+                            dataset and classList for us... I will write this myself
+                        */
+                        for(var singleAttr in elementAttributesObj[attr]){
+                            elementToExtend[attrInstance][singleAttr] = utilizeMapping ? elementAttributesObj[attr][singleAttr] : elementAttributesObj[attr][singleAttr];
+                        }
+                        break;
+                    case "innerHTML":
+                        /*
+                            I have this in a switch cause where I work at we depend on a polyfill to do
+                            dataset and classList for us... I will write this myself
+                        */
+                        elementToExtend.innerHTML = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
+                        break;
+                    default:
+                        // use the normal attribute and assign the attribute to it... example element.title or element.href
+                        elementToExtend[attrInstance] = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
                 }
 
-                // checking if the attr in question is a normal attribute of said DOM element...
-                if( ___this.hasOwnProperty(attrInstance) || attrInstance in ___this ){
-                    // yea??? then add through usual conventions on the DOM...
+            } else {
 
-                    switch(attrInstance){
-                        case "style":
-                        case "dataset":
-                            /*
-                                I have this in a switch cause where I work at we depend on a polyfill to do
-                                dataset and classList for us... I will write this myself
-                            */
-                            for(var singleAttr in elementAttributesObj[attrInstance]){
-                                ___this[attrInstance][singleAttr] = utilizeMapping ? elementAttributesObj[attrInstance][singleAttr] : elementAttributesObj[attr][singleAttr];
-                            }
-                            break;
-                        case "innerHTML":
-                            /*
-                                I have this in a switch cause where I work at we depend on a polyfill to do
-                                dataset and classList for us... I will write this myself
-                            */
-                            ___this.innerHTML = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
-                            break;
-                        default:
-                            // use the normal attribute and assign the attribute to it... example element.title or element.href
-                            ___this[attrInstance] = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
-                    }
-
-                } else {
-
-                    // this is when a custom attribute is passed to the specific element
-                    ___this.setAttribute( ( utilizeMapping ? attributeMappingObj[attr] : attr ), elementAttributesObj[attr] );
-
-                }
+                // this is when a custom attribute is passed to the specific element
+                elementToExtend.setAttribute( ( utilizeMapping ? attributeMappingObj[attr] : attr ), elementAttributesObj[attr] );
 
             }
 
-            return ___this;
-
-        };
-
-        extendElement.call(__this, elementAttributesObj, elementBindedDataAttributesObj);
+        }
 
     }
 
@@ -118,20 +113,20 @@
 
         switch(typeof dataToBindRender){
             case "string":
-                console.log("binding from a string");
+                prototypeUTILS.log("binding from a string");
                 for(var i in dataBindingObj){
                     _this[i] = dataToBindRender;
                 }
                 break;
             case "object":
-                console.log("binding from a Object");
+                prototypeUTILS.log("binding from a Object");
                 if(dataToBindRender.length){
-                    console.log("binding from a Object array", dataBindingObj, dataToBindRender);
+                    prototypeUTILS.log("binding from a Object array", dataBindingObj, dataToBindRender);
 
                 } else {
-                    console.log("binding from more proper Object", dataBindingObj, dataToBindRender);
+                    prototypeUTILS.log("binding from more proper Object", dataBindingObj, dataToBindRender);
 
-                    console.log("I need to check mapping",attributeMappingObj);
+                    prototypeUTILS.log("I need to check mapping",attributeMappingObj);
 
                     for(var i in dataBindingObj){
                         var referenceObj = dataToBindRender,
@@ -167,22 +162,24 @@
         if(typeof createElementObj === "object"){
 
             if(createElementObj.length){
-                console.log(createElementObj, renderingData, "I get here");
+                prototypeUTILS.log(createElementObj, createElementRenderingData, "I get here");
 
                 if(createElementRenderingData){
                     // parse thru the object
                 } else {
-                    if(renderingData){
-                        console.log("do something with this", createElementObj, renderingData)
+                    if(createElementRenderingData){
+                        prototypeUTILS.log("do something with this", createElementObj, createElementRenderingData);
 
                         return document.createTextNode()
                     } else {
                         // odds is you gave me an array but didnt give me the data to parse through... and I dont want those...
-                        return UTILS.error.throwOne("This is an object with a length attribute aka most likely an array and I dont want those...");
+                        return prototypeUTILS.error("This is an object with a length attribute aka most likely an array and I dont want those...");
                     }
                 }
 
             } else {
+
+                prototypeUTILS.log(createElementObj, createElementRenderingData, "in here ok")
 
                 var element,
                     elementName,
@@ -192,7 +189,7 @@
 
                 if(!createElementRenderingData){
 
-                    //console.log(createElementObj, createElementRenderingData)
+                    //prototypeUTILS.log(createElementObj, createElementRenderingData)
 
                     if(createElementObj.nodeType && createElementObj.nodeType !== 1){
 
@@ -201,7 +198,7 @@
                                 if( (nodeText = createElementObj.text) && typeof createElementObj.text === "string" ){
                                     element = doc.createTextNode(nodeText);
                                 } else {
-                                    return UTILS.error.throwOne("You specified a text node but you didnt give me a string for the text");
+                                    return prototypeUTILS.error("You specified a text node but you didnt give me a string for the text");
                                 }
                                 break;
                             /*
@@ -210,7 +207,7 @@
                                 if(nodeText = createElementObj.commentText || createElementObj.text){
                                     element = document.createComment(nodeText);
                                 } else {
-                                    return UTILS.error.throwOne("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
+                                    return prototypeUTILS.error("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
                                 }
                                 break;
                             case 2: // attribute
@@ -223,10 +220,12 @@
 
                     } else if(createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) {
 
+                        prototypeUTILS.log("part 3");
+
                         elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
 
                         if(typeof elementName !== "string" && elementName !== undefined){
-                            return UTILS.error.throwOne("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
+                            return prototypeUTILS.error("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
                         }
 
                         //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
@@ -237,24 +236,24 @@
                                 createElementObj.attributes = {};
                             }
 
-                            console.log("THIS WAS ADDED", element);
+                            prototypeUTILS.log("THIS WAS ADDED", element);
 
-                            createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData);
+                            createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData);
 
 
-                            console.log()
+                            prototypeUTILS.log()
                             element.bitching = true;
                             element.dataBindedAttributes = createElementObj.dataBindedAttributes;
                             element.bindedAttributesMapping = function(){
-                                console.log(this,"ok cool", arguments);
+                                prototypeUTILS.log(this,"ok cool", arguments);
                             };
 
                         }
 
-                        //  console.log(createElementObj);
+                        prototypeUTILS.log(createElementObj, "up here now ok");
 
                         //  if createElementObj exists the call extend with the element as the this
-                        createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
+                        createElementObj.attributes && extendElement.call(this, element, createElementObj.attributes);
 
                         /*
                             if you have children (you can call then childNodes or children) loops through them and append each one to the
@@ -273,12 +272,12 @@
                                 element.appendChild( createElement(children[i]) );
                             }
                         } else if(createElementObj.childrenDataHandling){
-                            console.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
+                            prototypeUTILS.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
 
                             if(createElementObj.childrenDataHandling.length){
-                                console.log("up in here");
+                                prototypeUTILS.log("up in here");
                                 for(var i=0;i<createElementObj.childrenDataHandling.length;i++){
-                                    console.log(createElementObj.childrenDataHandling[i]);
+                                    prototypeUTILS.log(createElementObj.childrenDataHandling[i]);
                                 }
                                 element.appendChild( createElement(createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData) );
                             } else {
@@ -286,12 +285,12 @@
                                     instanceElement,
                                     instanceDataBinded;
 
-                                console.log("fall into here", createElementObj, dataToLoop);
+                                prototypeUTILS.log("fall into here", createElementObj, dataToLoop);
 
                                 instanceDataBinded = createElementObj.childrenDataHandling.dataBindedAttributes && bindAttributes.call({}, createElementObj.childrenDataHandling.dataBindedAttributes, dataToLoop);
 
                                 for(var i in instanceDataBinded){
-                                    console.log(i)
+                                    prototypeUTILS.log(i)
 
                                     for(var j=0;j<instanceDataBinded[i].length;j++){
 
@@ -324,7 +323,7 @@
 
                     var dataArrayCount;
 
-                    //console.log("Now in this one ", createElementObj, createElementRenderingData);
+                    //prototypeUTILS.log("Now in this one ", createElementObj, createElementRenderingData);
 
                     containerElementName = document.createDocumentFragment();
 
@@ -333,7 +332,7 @@
 
                         if( dataArrayCount = createElementRenderingData.length){
 
-                            console.log("in here ok", createElementRenderingData);
+                            prototypeUTILS.log("in here ok", createElementRenderingData);
                             for(var i = 0;i<dataArrayCount;i++){
 
                                 elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
@@ -353,28 +352,27 @@
                                 containerElementName.appendChild(element);
                             }
                         } else {
-                            console.log("I am in this instance... given an object", createElementRenderingData);
+                            prototypeUTILS.log("I am in this instance... given an object", createElementRenderingData);
 
                         }
                     } else {
-                        console.log("what the fuck am I dealing with here");
+                        prototypeUTILS.log("what the fuck am I dealing with here");
                     }
 
                     return containerElementName;
 
                 }
 
-
             }
 
         } else if(typeof createElementObj === "string") {
 
-            return doc.createTextNode(createElementObj)
+            return doc.createTextNode(createElementObj);
 
         } else {
 
             // i will just fail if you dont use the api correctly
-            return UTILS.error.throwOne("The first argument should be an object... you passed me "+createElementObj+" which is a "+(typeof createElementObj)+"... I dont want that...");
+            return prototypeUTILS.error("The first argument should be an object... you passed me "+createElementObj+" which is a "+(typeof createElementObj)+"... I dont want that...");
 
         }
 
@@ -390,19 +388,22 @@
     */
     function render (createElementObj, dataObjToRender, renderConfigObj) {
 
+        var propsMethodsExist = false,
+            validPropertiesExist = false,
+            containerFragment,
+            renderingData,
+            failSilently;
+
         if(!createElementObj){
-            return UTILS.error.throwOne("I think it would be good to at least give me an object to start with - err-0");
+            return prototypeUTILS.error("I think it would be good to at least give me an object to start with - err-0");
         }
 
         if(typeof createElementObj !== "object" || typeof createElementObj.length === "number" ){
-            return UTILS.error.throwOne("You either gave me something that is not an object like i am expecting, or probably an array");
+            return prototypeUTILS.error("You either gave me something that is not an object like i am expecting, or probably an array");
         }
 
-        var propsMethodsExist = false,
-            validPropertiesExist = false;
-
         if(createElementObj.length){
-            console.log("have to be able to have createElementObj be an array to... this is next")
+            prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next")
             return null
 
         }
@@ -418,24 +419,22 @@
         }
 
         if(!propsMethodsExist){
-            return UTILS.error.throwOne("Well thats nice you gave me an empty object... what you want me to do with it...");
+            return prototypeUTILS.error("Well thats nice you gave me an empty object... what you want me to do with it...");
         }
 
         if(!validPropertiesExist){
-            return UTILS.error.throwOne("Well you gave me an object... thats cool but there is really nothing I can do with this...");
+            return prototypeUTILS.error("Well you gave me an object... thats cool but there is really nothing I can do with this...");
         }
 
-        var containerFragment = doc.createDocumentFragment();
+        containerFragment = doc.createDocumentFragment();
 
         if(dataObjToRender){
             renderingData = dataObjToRender;
         }
 
-        containerFragment.appendChild( createElement(createElementObj) );
+        containerFragment.appendChild( createElement.call(this, createElementObj) );
 
         if(renderConfigObj){
-            failSilently = renderConfigObj.failSilently;
-
             if(renderConfigObj.renderString){
                 return containerFragment.toString();
             }
@@ -455,20 +454,21 @@
     */
     function place (idToPlaceORDomObjectToPlace) {
 
+        if(typeof idToPlaceORDomObjectToPlace === "string"){
+
+        }
+
     }
 
-    console.log(_this);
-    console.log(_this.prototype);
+    prototypeUTILS.extend({
+        render : render
+    },{
+        attributeMapping:{}
+    })
 
-    debugger;
-
-    /*
-    _this.DOM = {
-        render : render,
-        extendElement : extendElement,
-        place : render,
-    }
-    */
+    prototypeUTILS.extend({
+        place : place
+    });
 
     return _this;
 
