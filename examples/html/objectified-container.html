@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Objectified</title>
+        <script src="/built/Objectified-container.js"></script>
+    </head>
+    <body>
+
+        <script>
+        var O = Objectified.init({
+            "modulePropertiesObject":{
+                "render":{
+                    "attributeMapping":{
+                        "iH":"innerHTML",
+                        "c":"className",
+                        "i":"id",
+                        "S":"style"
+                    }
+                }
+            }
+        });
+
+        var OH = Objectified.init({
+            "modulePropertiesObject":{
+                "render":{
+                    "attributeMapping":{
+                        "iH":"innerHTML"
+                    }
+                }
+            }
+        });
+        </script>
+
+    </body>
+</html>

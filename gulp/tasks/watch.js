@@ -14,10 +14,10 @@ gulp.task('watch', function() {
 		'objectifiedClientOnly',
 		'objectifiedNodeOnly',
 
-		'objectifiedContainerMin',
-		'objectifiedAllMin',
-		'objectifiedClientOnlyMin',
-		'objectifiedNodeOnlyMin',
+//		'objectifiedContainerMin',
+//		'objectifiedAllMin',
+//		'objectifiedClientOnlyMin',
+//		'objectifiedNodeOnlyMin',
 
 		'lint'
 		//'mocha'

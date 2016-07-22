@@ -3,11 +3,11 @@
 * though some may say I am just as guilty
 * @namespace window.Objectified
 */
-;var Objectified = ( function(globalObj, console, undefined) {
+;var Objectified = ( function(console, undefined) {
 
     "use strict";
 
-    var _this = this;
+    var globalRoot = this;
 
     function throwOne(errorText){
 
@@ -17,7 +17,7 @@
 
     function objectifiedLog(){
 
-        return console.log(arguments);
+        return console && console.log(arguments);
 
     }
 
@@ -25,16 +25,16 @@
 
         var _self = this;
 
-        for(var property in extendingObjectifiedObject){
-            _self.prototype[property] = function(){
+        for(var moduleName in extendingObjectifiedObject){
+            _self.prototype[moduleName] = function(){
                 var __module = this;
                 return function(){
-                    return extendingObjectifiedObject[property].apply({
+                    return extendingObjectifiedObject[moduleName].apply({
                         moduleObject : __module.moduleObject,
-                        objectifiedInstancePropertyObject : this.instancePropertyObject.modulePropertiesObject[property],
+                        instancePropertyModuleObject : this.instancePropertyObject.modulePropertiesObject[moduleName],
                         oPrototype : __module.oPrototype
                     }, arguments);
-                }
+                };
             }.call({
                 moduleObject : extendingObjectifiedModuleObject,
                 oPrototype : _self.prototype
@@ -54,7 +54,6 @@
         var objectified_self = this;
 
         objectified_self.objectifiedInstancePropertyObject = {
-            "attributeMapping": objectifiedInstancePropertyObject.attributeMapping || null,
             "failSilently": objectifiedInstancePropertyObject.failSilently || false
         };
 
@@ -87,6 +86,12 @@
                 return extend.call(ObjectifiedSelf, extendingObjectifiedObject, objectifiedModuleProperties);
             };
         }.call(ObjectifiedInstanceConstructor),
+        isSameDataType : function(){
+            var ObjectifiedSelf = this;
+            return function(expectedDataType, passedInDataType){
+                console.log(arguments)
+            };
+        }.call(ObjectifiedInstanceConstructor),
         error : function(){
             var ObjectifiedSelf = this;
             return function(errorText){
@@ -109,9 +114,18 @@
         }
     };
 
+    if (typeof exports !== "undefined") {
+        if (typeof module !== "undefined" && module.exports) {
+            exports = module.exports = ObjectifiedInstanceConstructor;
+        }
+        exports.Objectified = ObjectifiedInstanceConstructor;
+    } else {
+        globalRoot.Objectified = ObjectifiedInstanceConstructor;
+    }
+
     return ObjectifiedInstanceConstructor;
 
-}).call(Objectified || {}, window, console);
+}).call(this, console);
 
 /**
 * The attempt to make a template engine... you know instead of doing innerHTMLs with everything... and script tag hacks 
@@ -119,12 +133,40 @@
 * @namespace window.Objectified
 */
 
-;var Objectified = (function(globalObj, undefined){
+;var Objectified = (function(undefined){
 
     "use strict";
 
     var _this = this,
-        doc,
+        document = {
+            /*
+            got to think these thru cause they reflect the DOM in its 'current' state so its like I would
+            have to return those specific elements at the time of it being called/referred to...
+
+            body : function(){
+            },
+            head : function(){
+            },
+            documentElement : function(){
+            },
+                */
+            createComment : function(){
+                return new psuedoFragment();
+            },
+            createAttribute : function(){
+                return new psuedoFragment();
+            },
+            createDocumentFragment : function(){
+                return new psuedoFragment();
+            },
+            createTextNode : function(text){
+                return new psuedoTextNode(text);
+            },
+            createElement : function(tagName){
+                return new psuedoElement(tagName);
+            }
+        },
+        prototypeUTILS = _this.prototype.UTILS,
         listOfValidProperties = {
             "tag":1,
             "tagName":1,
@@ -133,18 +175,30 @@
             "children":1,
             "attributes":1
         },
-        prototypeUTILS = _this.prototype.UTILS;
+        selfClosingElements = {
+            area:1,
+            base:1,
+            basefont:1,
+            br:1,
+            col:1,
+            command:1,
+            embed:1,
+            frame:1,
+            hr:1,
+            img:1,
+            input:1,
+            isindex:1,
+            link:1,
+            meta:1,
+            param:1,
+            source:1
+        };
 
     // if its null then something aint right
     if(_this === null){
         return false;
     }
 
-    if(doc = globalObj.document){
-
-    } else {
-        return false;
-    }
 
     /**
     * The method in which extends on DOM elements' attributes...
@@ -282,19 +336,23 @@
                 if(createElementRenderingData){
                     // parse thru the object
                 } else {
+
                     if(createElementRenderingData){
+
                         prototypeUTILS.log("do something with this", createElementObj, createElementRenderingData);
 
-                        return document.createTextNode()
+                        return document.createTextNode();
+
                     } else {
                         // odds is you gave me an array but didnt give me the data to parse through... and I dont want those...
                         return prototypeUTILS.error("This is an object with a length attribute aka most likely an array and I dont want those...");
+
                     }
                 }
 
             } else {
 
-                prototypeUTILS.log(createElementObj, createElementRenderingData, "in here ok")
+                prototypeUTILS.log(createElementObj, createElementRenderingData, "in here ok");
 
                 var element,
                     elementName,
@@ -311,7 +369,7 @@
                         switch(createElementObj.nodeType){
                             case 3: // textNode
                                 if( (nodeText = createElementObj.text) && typeof createElementObj.text === "string" ){
-                                    element = doc.createTextNode(nodeText);
+                                    element = document.createTextNode(nodeText);
                                 } else {
                                     return prototypeUTILS.error("You specified a text node but you didnt give me a string for the text");
                                 }
@@ -344,7 +402,7 @@
                         }
 
                         //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
-                        element = doc.createElement(elementName || "div");
+                        element = document.createElement(elementName || "div");
 
                         if(createElementObj.dataBindedAttributes){
                             if(!createElementObj.attributes){
@@ -355,8 +413,6 @@
 
                             createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData);
 
-
-                            prototypeUTILS.log()
                             element.bitching = true;
                             element.dataBindedAttributes = createElementObj.dataBindedAttributes;
                             element.bindedAttributesMapping = function(){
@@ -405,11 +461,11 @@
                                 instanceDataBinded = createElementObj.childrenDataHandling.dataBindedAttributes && bindAttributes.call({}, createElementObj.childrenDataHandling.dataBindedAttributes, dataToLoop);
 
                                 for(var i in instanceDataBinded){
-                                    prototypeUTILS.log(i)
+                                    prototypeUTILS.log(i);
 
                                     for(var j=0;j<instanceDataBinded[i].length;j++){
 
-                                        var childElement = doc.createElement(createElementObj.childrenDataHandling.tagName || createElementObj.childrenDataHandling.tag || createElementObj.childrenDataHandling.nodeName || "div");
+                                        var childElement = document.createElement(createElementObj.childrenDataHandling.tagName || createElementObj.childrenDataHandling.tag || createElementObj.childrenDataHandling.nodeName || "div");
 
                                         if(createElementObj.childrenDataHandling.dataBindedAttributes){
                                             if(!createElementObj.childrenDataHandling.attributes){
@@ -452,7 +508,7 @@
 
                                 elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
 
-                                element = doc.createElement(elementName || "div");
+                                element = document.createElement(elementName || "div");
                                 
                                 if(createElementObj.dataBindedAttributes){
                                     if(!createElementObj.attributes){
@@ -482,7 +538,7 @@
 
         } else if(typeof createElementObj === "string") {
 
-            return doc.createTextNode(createElementObj);
+            return document.createTextNode(createElementObj);
 
         } else {
 
@@ -493,32 +549,27 @@
 
     }
 
-
     /**
     * This is basically mapped to the only public function/method within the objectified framework...
-    * @namespace window.Objectified.DOM
+    * @namespace window.Objectified
     * @method render
     * @param {Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
     * @return {Object}
     */
-    function render (createElementObj, dataObjToRender, renderConfigObj) {
-
-        var propsMethodsExist = false,
-            validPropertiesExist = false,
-            containerFragment,
-            renderingData,
-            failSilently;
-
+    function render (createElementObj, dataObjToRender) {
         if(!createElementObj){
-            return prototypeUTILS.error("I think it would be good to at least give me an object to start with - err-0");
+            return throwOne("I think it would be good to at least give me an object to start with - err-0");
         }
 
         if(typeof createElementObj !== "object" || typeof createElementObj.length === "number" ){
-            return prototypeUTILS.error("You either gave me something that is not an object like i am expecting, or probably an array");
+            return throwOne("You either gave me something that is not an object like i am expecting, or probably an array");
         }
 
+        var propsMethodsExist = false,
+            validPropertiesExist = false;
+
         if(createElementObj.length){
-            prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next")
+            console.log("have to be able to have createElementObj be an array to... this is next")
             return null
 
         }
@@ -534,57 +585,192 @@
         }
 
         if(!propsMethodsExist){
-            return prototypeUTILS.error("Well thats nice you gave me an empty object... what you want me to do with it...");
+            return throwOne("Well thats nice you gave me an empty object... what you want me to do with it...");
         }
 
         if(!validPropertiesExist){
-            return prototypeUTILS.error("Well you gave me an object... thats cool but there is really nothing I can do with this...");
+            return throwOne("Well you gave me an object... thats cool but there is really nothing I can do with this...");
         }
 
-        containerFragment = doc.createDocumentFragment();
+        var containerFragment = document.createDocumentFragment();
+
+        console.log(containerFragment);
 
         if(dataObjToRender){
             renderingData = dataObjToRender;
         }
 
-        containerFragment.appendChild( createElement.call(this, createElementObj) );
+        containerFragment.appendChild( createElement(createElementObj) );
 
-        if(renderConfigObj){
-            if(renderConfigObj.renderString){
-                return containerFragment.toString();
+        return containerFragment.toString();
+
+    }
+
+
+    function psuedoElement(tagName){
+        /* jshint -W001 */
+        var self = this;
+        this.tagName = tagName;
+        this.nodeName = this.tagName;
+        this.children = [];
+        this.innerHTML = "";
+        this.innerText = this.textContext = "";
+        this.attributeList = {};
+        this.style = {};
+        this.dataset = {};
+        this.cssText = {};
+
+        this.appendChild = function(childElement){
+            self.children.push(childElement);
+        };
+
+        this.setAttribute = function(attributeName, attributeValue){
+            switch(attributeName){
+                case "className":
+                    self.attributeList["class"] = attributeValue;
+                    break;
+                case "innerHTML":
+                case "innerText": case "textContext":
+
+                    switch(attributeName){
+                        case "innerHTML":
+                            this.innerHTML = attributeValue;
+                            break;
+                        default:
+                            this.textContext = new psuedoTextNode(attributeValue);
+                    }
+                    break;
+                default:
+                    self.attributeList[attributeName] = attributeValue;
             }
-        }
+        };
 
-        return containerFragment;
+        this.hasOwnProperty = function(){
+            return false;
+        };
 
-    }
+        this.renderChildren = function(){
+            var childrenHTMLString = "";
+            for(var i = 0; i < self.children.length; i++){
+                childrenHTMLString += self.children[i].renderSelf();
+            }
+            return childrenHTMLString;
+        };
 
+        this.renderAllStyles = function(){
+            var stylesBuildUp = "";
 
-    /**
-    * This is basically mapped to the only public function/method within the objectified framework...
-    * @namespace window.Objectified.DOM
-    * @method place
-    * @param {string|Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
-    * @return {Object}
-    */
-    function place (idToPlaceORDomObjectToPlace) {
+            for(var i in self.style){
+                if(self.style[i] !== ""){
+                    stylesBuildUp += i+":"+self.style[i]+";";
+                }
+            }
 
-        if(typeof idToPlaceORDomObjectToPlace === "string"){
+            if(stylesBuildUp){
+                stylesBuildUp = " style=\""+stylesBuildUp+"\""
+            }
 
-        }
+            return stylesBuildUp;
+        };
 
-    }
+        this.renderAllAttributes = function(){
+            var attrString = "";
+
+            for(var i in self.attributeList){
+                if(self.attributeList[i] !== ""){
+                    attrString += " "+i+"=\""+self.attributeList[i]+"\"";
+                } else {
+                    attrString += " "+i+"";
+                }
+            }
+
+            return attrString;
+        };
+
+        this.renderDataSet = function(){
+            var dataSetBuildUp = "";
+
+            for(var i in self.dataset){
+                if(self.dataset[i] !== ""){
+                    dataSetBuildUp += " data-"+(i.replace(/([A-Z])/g, '-$1').toLowerCase())+"=\""+self.dataset[i]+"\"";
+                }
+            }
+
+            return dataSetBuildUp;
+        };
+
+        this.renderSelf = function(){
+            if(selfClosingElements[self.tagName]){
+                return "<"+self.tagName+""+self.renderAllAttributes()+""+self.renderAllStyles()+""+self.renderDataSet()+">";
+            } else {
+                return "<"+self.tagName+""+self.renderAllAttributes()+""+self.renderAllStyles()+""+self.renderDataSet()+">"+self.textContext+""+self.innerHTML+""+self.renderChildren()+"</"+self.tagName+">";
+            }
+        };
+        this.toString = function(){
+            return this.renderSelf();
+        };
+    };
+
+    function psuedoTextNode(text){
+        /* jshint -W001 */
+        var self = this;
+        self.innerText = self.textContext = text;
+
+        self.appendChild = function(childElement){
+            // error out here
+        };
+        self.setAttribute = function(attributeName, attributeValue){
+            // error out here
+        };
+        self.hasOwnProperty = function(){
+            return false;
+        };
+        self.renderChildren = function(){
+            // this needs to error out
+        };
+        self.renderAllAttributes = function(){
+            // this needs to error out
+        };
+        self.renderSelf = function(){
+            return self.textContext;
+        };
+        self.toString = function(){
+            return self.renderSelf();
+        };
+
+        return self;
+    };
+
+    function psuedoFragment(tagName){
+        var self = this;
+        self.children = [];
+
+        self.appendChild = function(childElement){
+            self.children.push(childElement);
+        };
+        self.renderChildren = function(){
+            var childrenHTMLString = "";
+            for(var i = 0; i < self.children.length; i++){
+                childrenHTMLString += self.children[i].renderSelf();
+            }
+            return childrenHTMLString;
+        };
+        self.renderSelf = function(){
+            return self.renderChildren();
+        };
+        self.toString = function(){
+            return self.renderSelf();
+        };
+
+        return self;
+    };
 
     prototypeUTILS.extend({
         render : render
     },{
         attributeMapping:{}
-    })
-
-    prototypeUTILS.extend({
-        place : place
     });
 
     return _this;
 
-}).call(Objectified || null, window);
+}).call(Objectified || null);

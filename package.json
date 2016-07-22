@@ -1,56 +1,54 @@
 {
-	"name": "Objectified",
-	"version": "0.9.0",
-	"author": "Delmarc Eric Rosario <delmarc@uneek1.com>",
-	"description": "A Real Pure JavaScript Template 'Engine'",
-	"contributors": [ 
-		{
-			"name": "Delmarc Eric Rosario",
-			"email": "delmarc@uneek1.com"
-		} 
-	],
-	"bin": {
-	},
-	"scripts": {
-		"start":"npm install && npm run buildThisBitch",
-		"buildThisBitch":"gulp"
-	},
-	"main": "",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/delmarc/Objectified.git"
-	},
-	"bugs": {
-		"url": "https://github.com/delmarc/Objectified/issues"
-	},
-	"keywords": [
-		"Objectified"
-	],
-	"dependencies" : {
-		"connect": "2.15.0",
-		"gulp": "",
-		"gulp-concat": "",
-		"gulp-file": "",
-		"gulp-if": "",
-		"gulp-jshint": "",
-		"gulp-livereload": "",
-		"gulp-mocha": "",
-		"gulp-notify": "",
-		"gulp-open": "",
-		"gulp-uglify": "",
-		"gulp-watch": "^3.0.0",
-		"mocha": "",
-		"vinyl-source-stream": "",
-		"webdriverjs": "^1.7.5",
-		"yargs": "^3.18.0"
-	},
-	"analyze": false,
-	"devDependencies": {
-	},
-	"bundledDependencies": [
-	],  
-	"license": "MIT",
-	"engines": {
-		"node": ">=0.10.24"
-	}
+  "name": "Objectified",
+  "version": "0.9.0",
+  "author": "Delmarc Eric Rosario <delmarc@uneek1.com>",
+  "description": "A Real Pure JavaScript Template 'Engine'",
+  "contributors": [
+    {
+      "name": "Delmarc Eric Rosario",
+      "email": "delmarc@uneek1.com"
+    }
+  ],
+  "bin": {},
+  "scripts": {
+    "start": "npm install && npm run buildThisBitch",
+    "buildThisBitch": "gulp"
+  },
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/delmarc/Objectified.git"
+  },
+  "bugs": {
+    "url": "https://github.com/delmarc/Objectified/issues"
+  },
+  "keywords": [
+    "Objectified"
+  ],
+  "dependencies": {
+    "connect": "2.15.0",
+    "gulp": "",
+    "gulp-concat": "",
+    "gulp-file": "",
+    "gulp-if": "",
+    "gulp-jshint": "",
+    "gulp-livereload": "",
+    "gulp-mocha": "",
+    "gulp-open": "",
+    "gulp-uglify": "",
+    "vinyl-source-stream": "",
+    "webdriverjs": "^1.7.5",
+    "yargs": "^3.18.0"
+  },
+  "analyze": false,
+  "devDependencies": {
+    "gulp-notify": "^2.2.0",
+    "gulp-watch": "^3.0.0",
+    "mocha": ""
+  },
+  "bundledDependencies": [],
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10.24"
+  }
 }

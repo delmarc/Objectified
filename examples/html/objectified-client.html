@@ -3,8 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Objectified</title>
-        <!--script src="/built/Objectified-container.min.js"></script-->
-        <script src="/built/Objectified-client.min.js"></script>
+        <script src="/built/Objectified-client.js"></script>
     </head>
     <body>
 
@@ -22,6 +21,7 @@
             }
         });
 
+/*
         var OH = Objectified.init({
             "modulePropertiesObject":{
                 "render":{
@@ -31,8 +31,9 @@
                 }
             }
         });
+*/
 
-        console.log(O.render({
+        document.body.appendChild(O.render({
             "tagName":"header",
             "attributes":{
                 "c":"someClass",
@@ -43,7 +44,7 @@
                 }
             }
         }));
-
+/*
         console.log(OH.render({
             "tagName":"article",
             "attributes":{
@@ -55,6 +56,57 @@
                 }
             }
         }));
+*/
+        document.body.appendChild(O.render({
+            "tagName":"header",
+            "attributes":{
+                "c":"someClass",
+                "i":"header",
+                "S":{
+                    "border":"1px solid #ff0000"
+                }
+            },
+            dataBindedAttributes:{
+                "iH":["header"]
+            }
+        },{
+            "header":"text in a header",
+            "some":{
+                "text":"yea boy"
+            }
+        }));
+
+
+        document.body.appendChild(O.render({
+            "tagName":"div",
+            "attributes":{
+                "c":"your moms",
+                "S":{
+                    "border":"1px solid #ff00ff"
+                }
+            },
+            "childNodes":[{
+                "tagName":"div",
+                "attributes":{
+                    "c":"your moms",
+                    "S":{
+                        "border":"1px solid #0000ff"
+                    }
+                },
+                dataBindedAttributes:{
+                    "iH":["some","text"]
+                }                
+            }],
+            dataBindedAttributes:{
+                "iH":["divThingy"]
+            }
+        },{
+            "divThingy":"text in a div",
+            "some":{
+                "text":"yea OK my man boy"
+            }
+        }));
+
 
         /*
         document.body.appendChild(O.render({

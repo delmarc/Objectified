@@ -3,11 +3,11 @@
 * though some may say I am just as guilty
 * @namespace window.Objectified
 */
-;var Objectified = ( function(globalObj, console, undefined) {
+;var Objectified = ( function(console, undefined) {
 
     "use strict";
 
-    var _this = this;
+    var globalRoot = this;
 
     function throwOne(errorText){
 
@@ -17,7 +17,7 @@
 
     function objectifiedLog(){
 
-        return console.log(arguments);
+        return console && console.log(arguments);
 
     }
 
@@ -25,16 +25,16 @@
 
         var _self = this;
 
-        for(var property in extendingObjectifiedObject){
-            _self.prototype[property] = function(){
+        for(var moduleName in extendingObjectifiedObject){
+            _self.prototype[moduleName] = function(){
                 var __module = this;
                 return function(){
-                    return extendingObjectifiedObject[property].apply({
+                    return extendingObjectifiedObject[moduleName].apply({
                         moduleObject : __module.moduleObject,
-                        objectifiedInstancePropertyObject : this.instancePropertyObject.modulePropertiesObject[property],
+                        instancePropertyModuleObject : this.instancePropertyObject.modulePropertiesObject[moduleName],
                         oPrototype : __module.oPrototype
                     }, arguments);
-                }
+                };
             }.call({
                 moduleObject : extendingObjectifiedModuleObject,
                 oPrototype : _self.prototype
@@ -54,7 +54,6 @@
         var objectified_self = this;
 
         objectified_self.objectifiedInstancePropertyObject = {
-            "attributeMapping": objectifiedInstancePropertyObject.attributeMapping || null,
             "failSilently": objectifiedInstancePropertyObject.failSilently || false
         };
 
@@ -87,6 +86,12 @@
                 return extend.call(ObjectifiedSelf, extendingObjectifiedObject, objectifiedModuleProperties);
             };
         }.call(ObjectifiedInstanceConstructor),
+        isSameDataType : function(){
+            var ObjectifiedSelf = this;
+            return function(expectedDataType, passedInDataType){
+                console.log(arguments)
+            };
+        }.call(ObjectifiedInstanceConstructor),
         error : function(){
             var ObjectifiedSelf = this;
             return function(errorText){
@@ -109,9 +114,18 @@
         }
     };
 
+    if (typeof exports !== "undefined") {
+        if (typeof module !== "undefined" && module.exports) {
+            exports = module.exports = ObjectifiedInstanceConstructor;
+        }
+        exports.Objectified = ObjectifiedInstanceConstructor;
+    } else {
+        globalRoot.Objectified = ObjectifiedInstanceConstructor;
+    }
+
     return ObjectifiedInstanceConstructor;
 
-}).call(Objectified || {}, window, console);
+}).call(this, console);
 
 /**
 * The attempt to make a template engine... you know instead of doing innerHTMLs with everything... and script tag hacks 
@@ -146,6 +160,14 @@
         return false;
     }
 
+    /*
+        UTILS
+    */
+
+    function createDocumentFragment(){
+        return doc.createDocumentFragment();
+    }
+
     /**
     * The method in which extends on DOM elements' attributes...
     * @method extendElement
@@ -162,7 +184,7 @@
 
         var __this = this,
             extendElement,
-            attributeMappingObj = __this.objectifiedInstancePropertyObject && !!__this.objectifiedInstancePropertyObject.attributeMapping ? __this.objectifiedInstancePropertyObject.attributeMapping : null,
+            attributeMappingObj = __this.instancePropertyModuleObject && !!__this.instancePropertyModuleObject.attributeMapping ? __this.instancePropertyModuleObject.attributeMapping : null,
             utilizeMapping = !!attributeMappingObj,
             attrInstance;
 
@@ -178,8 +200,6 @@
             // checking if the attr in question is a normal attribute of said DOM element...
             if( elementToExtend.hasOwnProperty(attrInstance) || attrInstance in elementToExtend ){
                 // yea??? then add through usual conventions on the DOM...
-
-                prototypeUTILS.log(attrInstance);
 
                 switch(attrInstance){
                     case "style":
@@ -223,14 +243,15 @@
     * @return {Object}
     */
 
-    function bindAttributes(dataBindingObj, dataToBindRender){
-        var _this = this;
+    function bindAttributes(elementBaseAttributesObject, dataBindingObj, dataToBindRender){
+        var _this = this,
+            attributeMappingObj = _this.instancePropertyModuleObject.attributeMapping;
 
         switch(typeof dataToBindRender){
             case "string":
                 prototypeUTILS.log("binding from a string");
                 for(var i in dataBindingObj){
-                    _this[i] = dataToBindRender;
+                    elementBaseAttributesObject[i] = dataToBindRender;
                 }
                 break;
             case "object":
@@ -252,7 +273,7 @@
                             referenceObj = referenceObj[accessArray.shift()];
                         }
 
-                        _this[i] = referenceObj;
+                        elementBaseAttributesObject[i] = referenceObj;
                     }
 
                 }
@@ -260,7 +281,7 @@
                 break;
         }
 
-        return _this;
+        return elementBaseAttributesObject;
 
     }
 
@@ -272,29 +293,28 @@
     * @param {Object} REQUIRED - The desired DOM element with tagName and optional attributes and childNodes/children
     * @return {Object}
     */
-    function createElement (createElementObj, createElementRenderingData) {
+    function createElement (createElementObj, renderingData) {
+
+        var _objectified = this;
 
         if(typeof createElementObj === "object"){
 
             if(createElementObj.length){
-                prototypeUTILS.log(createElementObj, createElementRenderingData, "I get here");
+                prototypeUTILS.log(createElementObj, renderingData, "I get here");
 
-                if(createElementRenderingData){
-                    // parse thru the object
+                if(renderingData){
+
+                    prototypeUTILS.log("do something with this", createElementObj, renderingData);
+
+                    return document.createTextNode();
+
                 } else {
-                    if(createElementRenderingData){
-                        prototypeUTILS.log("do something with this", createElementObj, createElementRenderingData);
+                    // odds is you gave me an array but didnt give me the data to parse through... and I dont want those...
+                    return prototypeUTILS.error("This is an object with a length attribute aka most likely an array and I dont want those...");
 
-                        return document.createTextNode()
-                    } else {
-                        // odds is you gave me an array but didnt give me the data to parse through... and I dont want those...
-                        return prototypeUTILS.error("This is an object with a length attribute aka most likely an array and I dont want those...");
-                    }
                 }
 
             } else {
-
-                prototypeUTILS.log(createElementObj, createElementRenderingData, "in here ok")
 
                 var element,
                     elementName,
@@ -302,9 +322,9 @@
                     children,
                     nodeText;
 
-                if(!createElementRenderingData){
+                if(!renderingData){
 
-                    //prototypeUTILS.log(createElementObj, createElementRenderingData)
+                    //prototypeUTILS.log(createElementObj, renderingData)
 
                     if(createElementObj.nodeType && createElementObj.nodeType !== 1){
 
@@ -328,14 +348,12 @@
                             case 2: // attribute
                                 break;
                             case 11: // docFrag
-                                element = document.createDocumentFragment();
+                                element = createDocumentFragment();
                                 break;
                             */
                         }
 
                     } else if(createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) {
-
-                        prototypeUTILS.log("part 3");
 
                         elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
 
@@ -346,46 +364,29 @@
                         //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
                         element = doc.createElement(elementName || "div");
 
-                        if(createElementObj.dataBindedAttributes){
-                            if(!createElementObj.attributes){
-                                createElementObj.attributes = {};
-                            }
-
-                            prototypeUTILS.log("THIS WAS ADDED", element);
-
-                            createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData);
-
-
-                            prototypeUTILS.log()
-                            element.bitching = true;
-                            element.dataBindedAttributes = createElementObj.dataBindedAttributes;
-                            element.bindedAttributesMapping = function(){
-                                prototypeUTILS.log(this,"ok cool", arguments);
-                            };
-
-                        }
-
-                        prototypeUTILS.log(createElementObj, "up here now ok");
-
                         //  if createElementObj exists the call extend with the element as the this
-                        createElementObj.attributes && extendElement.call(this, element, createElementObj.attributes);
+                        createElementObj.attributes && extendElement.call(_objectified, element, createElementObj.attributes);
 
                         /*
                             if you have children (you can call then childNodes or children) loops through them and append each one to the
                             created element in question...
                         */
 
-                        if(createElementObj.childNodes || createElementObj.children){
-                            //  and since we do, cache the object
-                            children = createElementObj.childNodes || createElementObj.children;
 
-                            for(var i=0;i<children.length;i++){
-                                /*
-                                    cycle through the children and recursively call createElement on those child nodes which can go
-                                    forever and ever and ever and ever...
-                                */
-                                element.appendChild( createElement(children[i]) );
+                        console.log("I get in this instance Right???")
+                        if(children = createElementObj.childNodes || createElementObj.children){
+                            console.log(children);
+                            //  and since we do, cache the object
+                            if(children.length){
+                                for(var i=0;i<children.length;i++){
+                                    /*
+                                        cycle through the children and recursively call createElement on those child nodes which can go
+                                        forever and ever and ever and ever...
+                                    */
+                                    element.appendChild( createElement(children[i]) );
+                                }
                             }
+
                         } else if(createElementObj.childrenDataHandling){
                             prototypeUTILS.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
 
@@ -405,7 +406,6 @@
                                 instanceDataBinded = createElementObj.childrenDataHandling.dataBindedAttributes && bindAttributes.call({}, createElementObj.childrenDataHandling.dataBindedAttributes, dataToLoop);
 
                                 for(var i in instanceDataBinded){
-                                    prototypeUTILS.log(i)
 
                                     for(var j=0;j<instanceDataBinded[i].length;j++){
 
@@ -438,16 +438,16 @@
 
                     var dataArrayCount;
 
-                    //prototypeUTILS.log("Now in this one ", createElementObj, createElementRenderingData);
+                    prototypeUTILS.log("Now in this one ", createElementObj, renderingData);
 
-                    containerElementName = document.createDocumentFragment();
+                    containerElementName = createDocumentFragment();
 
                     // i have the data
-                    if(typeof createElementRenderingData === "object"){
+                    if(typeof renderingData === "object"){
 
-                        if( dataArrayCount = createElementRenderingData.length){
+                        if( dataArrayCount = renderingData.length){
 
-                            prototypeUTILS.log("in here ok", createElementRenderingData);
+                            prototypeUTILS.log("in here ok", renderingData);
                             for(var i = 0;i<dataArrayCount;i++){
 
                                 elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
@@ -459,7 +459,7 @@
                                         createElementObj.attributes = {};
                                     }
 
-                                    createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, createElementRenderingData[i]); 
+                                    createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData[i]); 
                                 }
 
                                 createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
@@ -467,9 +467,32 @@
                                 containerElementName.appendChild(element);
                             }
                         } else {
-                            prototypeUTILS.log("I am in this instance... given an object", createElementRenderingData);
+
+
+
+                            prototypeUTILS.log("I am in this instance... given an object", renderingData);
+
+                            elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
+
+                            element = doc.createElement(
+                                (createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) ||
+                                "div"
+                            );
+
+                            if(createElementObj.dataBindedAttributes){
+                                if(!createElementObj.attributes){
+                                    createElementObj.attributes = {};
+                                }
+
+                                createElementObj.dataBindedAttributes && bindAttributes.call(_objectified, createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData); 
+                            }
+
+                            createElementObj.attributes && extendElement.call(_objectified, element, createElementObj.attributes);
+
+                            containerElementName.appendChild(element);
 
                         }
+
                     } else {
                         prototypeUTILS.log("what the fuck am I dealing with here");
                     }
@@ -479,10 +502,6 @@
                 }
 
             }
-
-        } else if(typeof createElementObj === "string") {
-
-            return doc.createTextNode(createElementObj);
 
         } else {
 
@@ -501,13 +520,12 @@
     * @param {Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
     * @return {Object}
     */
-    function render (createElementObj, dataObjToRender, renderConfigObj) {
+    function render (createElementObj, dataObjToRender) {
 
         var propsMethodsExist = false,
             validPropertiesExist = false,
             containerFragment,
-            renderingData,
-            failSilently;
+            _objectified = this;
 
         if(!createElementObj){
             return prototypeUTILS.error("I think it would be good to at least give me an object to start with - err-0");
@@ -518,9 +536,8 @@
         }
 
         if(createElementObj.length){
-            prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next")
-            return null
-
+            prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next");
+            return null;
         }
 
         for(var i in createElementObj){
@@ -541,37 +558,11 @@
             return prototypeUTILS.error("Well you gave me an object... thats cool but there is really nothing I can do with this...");
         }
 
-        containerFragment = doc.createDocumentFragment();
+        containerFragment = createDocumentFragment();
 
-        if(dataObjToRender){
-            renderingData = dataObjToRender;
-        }
-
-        containerFragment.appendChild( createElement.call(this, createElementObj) );
-
-        if(renderConfigObj){
-            if(renderConfigObj.renderString){
-                return containerFragment.toString();
-            }
-        }
+        containerFragment.appendChild( createElement.call(_objectified, createElementObj, dataObjToRender) );
 
         return containerFragment;
-
-    }
-
-
-    /**
-    * This is basically mapped to the only public function/method within the objectified framework...
-    * @namespace window.Objectified.DOM
-    * @method place
-    * @param {string|Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
-    * @return {Object}
-    */
-    function place (idToPlaceORDomObjectToPlace) {
-
-        if(typeof idToPlaceORDomObjectToPlace === "string"){
-
-        }
 
     }
 
@@ -579,10 +570,6 @@
         render : render
     },{
         attributeMapping:{}
-    })
-
-    prototypeUTILS.extend({
-        place : place
     });
 
     return _this;
