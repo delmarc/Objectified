@@ -11,6 +11,9 @@
         var O = Objectified.init({
             "modulePropertiesObject":{
                 "render":{
+                    "validPropertiesMapping":{
+                        "tagName":"TN"
+                    },
                     "attributeMapping":{
                         "iH":"innerHTML",
                         "c":"className",
@@ -55,7 +58,7 @@
             }
         }));
 
-        document.body.appendChild(O.render({
+        console.log(O.render({
             "tagName":"header",
             "attributes":{
                 "c":"someClass",
@@ -65,7 +68,35 @@
                 }
             },
             dataBindedAttributes:{
-                iH:["some","text"]
+                iH:["header"]
+            }
+        },{
+            "header":"text in a header",
+            "some":{
+                "text":"yea boy"
+            }
+        }));
+
+        document.body.appendChild(O.render({
+            "tagName":"header",
+            "attributes":{
+                "c":"someClass",
+                "i":"header",
+                "S":{
+                    "border":"1px solid #ff0000"
+                }
+            },
+            children:[{
+                "tagName":"p",
+                "attributes":{
+                    "id":"someP"
+                },
+                dataBindedAttributes:{
+                    iH:["some","text"]
+                }
+            }],
+            dataBindedAttributes:{
+                iH:["header"]
             }
         },{
             "header":"text in a header",

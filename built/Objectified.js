@@ -9,43 +9,60 @@
 
     var globalRoot = this;
 
+    // this will be mapped to UTILS.error
     function throwOne(errorText){
 
         throw new Error(errorText);
 
     }
 
+    // this will be mapped to UTILS.log
     function objectifiedLog(){
 
         return console && console.log(arguments);
 
     }
 
+    // this will be mapped to UTILS.extend
     function extend(extendingObjectifiedObject, extendingObjectifiedModuleObject){
 
         var _self = this;
 
         for(var moduleName in extendingObjectifiedObject){
-            _self.prototype[moduleName] = function(){
-                var __module = this;
-                return function(){
-                    return extendingObjectifiedObject[moduleName].apply({
-                        moduleObject : __module.moduleObject,
-                        instancePropertyModuleObject : this.instancePropertyObject.modulePropertiesObject[moduleName],
-                        oPrototype : __module.oPrototype
-                    }, arguments);
-                };
-            }.call({
-                moduleObject : extendingObjectifiedModuleObject,
-                oPrototype : _self.prototype
+
+            _self.prototype[moduleName] = returnModulePropertyObj(extendingObjectifiedObject,moduleName).call({
+                "moduleObject" : extendingObjectifiedModuleObject,
+                "oPrototype" : _self.prototype
             });
+
         }
 
         return _self;
 
     }
 
-    function returnModulePropertyObj(){
+    function returnModulePropertyObj(extendingObjectifiedObject, moduleName){
+
+        // return crazy here...
+        return function(){
+
+            // this is what the call is regarding
+            var __module = this;
+
+            return function(){
+
+                // this is once its in the actual module itself..
+                var constructorSelf = this;
+
+                return extendingObjectifiedObject[moduleName].apply({
+                    "moduleObject" : __module.moduleObject,
+                    "instancePropertyModuleObject" : constructorSelf.instancePropertyObject.modulePropertiesObject[moduleName],
+                    "oPrototype" : __module.oPrototype
+                }, arguments);
+
+            };            
+
+        };
 
     }
 
@@ -75,10 +92,14 @@
 
     }
 
+    // This is what initializes an Objectified instance...
     ObjectifiedInstanceConstructor.init = function(objectifiedInstancePropertyObject){
+
         return new ObjectifiedInstanceConstructor(objectifiedInstancePropertyObject);
+
     };
 
+    // Objectified Utils setup...
     ObjectifiedInstanceConstructor.prototype.UTILS = {
         extend : function(){
             var ObjectifiedSelf = this;
@@ -86,12 +107,17 @@
                 return extend.call(ObjectifiedSelf, extendingObjectifiedObject, objectifiedModuleProperties);
             };
         }.call(ObjectifiedInstanceConstructor),
+        /*
+
+        I forgot why I was doing this one
         isSameDataType : function(){
             var ObjectifiedSelf = this;
             return function(expectedDataType, passedInDataType){
-                console.log(arguments)
+                objectifiedLog.apply(ObjectifiedSelf, arguments);
             };
         }.call(ObjectifiedInstanceConstructor),
+
+        */
         error : function(){
             var ObjectifiedSelf = this;
             return function(errorText){
@@ -106,20 +132,23 @@
         }.call(ObjectifiedInstanceConstructor)
     };
 
+    // Objectified itselfs properties...
     ObjectifiedInstanceConstructor.prototype.objectifiedProperties = {
-        baseVersion:"0.8.1",
-        atTheTime:{
-            song : "Bastard Child",
-            artist : "Master P"
+        "baseVersion":"0.9.0",
+        "atTheTime":{
+            "song" : "Bastard Child",
+            "artist" : "Master P"
         }
     };
 
     if (typeof exports !== "undefined") {
+        // rethink this... i dont like this
         if (typeof module !== "undefined" && module.exports) {
             exports = module.exports = ObjectifiedInstanceConstructor;
         }
         exports.Objectified = ObjectifiedInstanceConstructor;
     } else {
+        // just attach to the root object like window
         globalRoot.Objectified = ObjectifiedInstanceConstructor;
     }
 
@@ -128,7 +157,7 @@
 }).call(this, console);
 
 /**
-* The attempt to make a template engine... you know instead of doing innerHTMLs with everything... and script tag hacks 
+* An attempt to make a template engine...
 * though some may say I am just as guilty
 * @namespace window.Objectified
 */
@@ -148,7 +177,7 @@
             "attributes":1
         },
         prototypeUTILS = _this.prototype.UTILS;
-
+// 
     // if its null then something aint right
     if(_this === null){
         return false;
@@ -249,31 +278,31 @@
 
         switch(typeof dataToBindRender){
             case "string":
-                prototypeUTILS.log("binding from a string");
-                for(var i in dataBindingObj){
-                    elementBaseAttributesObject[i] = dataToBindRender;
+                //prototypeUTILS.log("binding from a string");
+                for(var stringBindingObjProps in dataBindingObj){
+                    elementBaseAttributesObject[stringBindingObjProps] = dataToBindRender;
                 }
                 break;
             case "object":
-                prototypeUTILS.log("binding from a Object");
+                //prototypeUTILS.log("binding from a Object");
                 if(dataToBindRender.length){
-                    prototypeUTILS.log("binding from a Object array", dataBindingObj, dataToBindRender);
+                    // prototypeUTILS.log("binding from a Object array", dataBindingObj, dataToBindRender);
 
                 } else {
-                    prototypeUTILS.log("binding from more proper Object", dataBindingObj, dataToBindRender);
+                    // prototypeUTILS.log("binding from more proper Object", dataBindingObj, dataToBindRender);
 
-                    prototypeUTILS.log("I need to check mapping",attributeMappingObj);
+                    // prototypeUTILS.log("I need to check mapping",attributeMappingObj);
 
-                    for(var i in dataBindingObj){
+                    for(var objectBindingObjProps in dataBindingObj){
                         var referenceObj = dataToBindRender,
-                            accessArray = dataBindingObj[i],
+                            accessArray = dataBindingObj[objectBindingObjProps],
                             accessArrayLength = accessArray.length;
 
                         for(var j = 0;j<accessArrayLength;j++){
                             referenceObj = referenceObj[accessArray.shift()];
                         }
 
-                        elementBaseAttributesObject[i] = referenceObj;
+                        elementBaseAttributesObject[objectBindingObjProps] = referenceObj;
                     }
 
                 }
@@ -294,17 +323,20 @@
     * @return {Object}
     */
     function createElement (createElementObj, renderingData) {
+        // prototypeUTILS.log(createElementObj, renderingData, "BEGINNING");
 
-        var _objectified = this;
+        var _objectified = this,
+            validPropertiesMappingObj = _objectified.instancePropertyModuleObject && !!_objectified.instancePropertyModuleObject.validPropertiesMapping ? _objectified.instancePropertyModuleObject.validPropertiesMapping : null,
+            utilizeValidPropertiesMapping = !!validPropertiesMappingObj;
 
         if(typeof createElementObj === "object"){
 
             if(createElementObj.length){
-                prototypeUTILS.log(createElementObj, renderingData, "I get here");
+                // prototypeUTILS.log("I get createElementObj as an array");
 
                 if(renderingData){
 
-                    prototypeUTILS.log("do something with this", createElementObj, renderingData);
+                    // prototypeUTILS.log("do something with this", createElementObj, renderingData);
 
                     return document.createTextNode();
 
@@ -315,6 +347,8 @@
                 }
 
             } else {
+
+                // prototypeUTILS.log("I get createElementObj as an object", createElementObj);
 
                 var element,
                     elementName,
@@ -372,10 +406,10 @@
                             created element in question...
                         */
 
+                        // prototypeUTILS.log(createElementObj);
 
-                        console.log("I get in this instance Right???")
                         if(children = createElementObj.childNodes || createElementObj.children){
-                            console.log(children);
+                            prototypeUTILS.log("got kids here", children);
                             //  and since we do, cache the object
                             if(children.length){
                                 for(var i=0;i<children.length;i++){
@@ -388,10 +422,10 @@
                             }
 
                         } else if(createElementObj.childrenDataHandling){
-                            prototypeUTILS.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
+                            // prototypeUTILS.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
 
                             if(createElementObj.childrenDataHandling.length){
-                                prototypeUTILS.log("up in here");
+                                // prototypeUTILS.log("up in here");
                                 for(var i=0;i<createElementObj.childrenDataHandling.length;i++){
                                     prototypeUTILS.log(createElementObj.childrenDataHandling[i]);
                                 }
@@ -401,7 +435,7 @@
                                     instanceElement,
                                     instanceDataBinded;
 
-                                prototypeUTILS.log("fall into here", createElementObj, dataToLoop);
+                                // prototypeUTILS.log("fall into here", createElementObj, dataToLoop);
 
                                 instanceDataBinded = createElementObj.childrenDataHandling.dataBindedAttributes && bindAttributes.call({}, createElementObj.childrenDataHandling.dataBindedAttributes, dataToLoop);
 
@@ -447,7 +481,7 @@
 
                         if( dataArrayCount = renderingData.length){
 
-                            prototypeUTILS.log("in here ok", renderingData);
+                            // prototypeUTILS.log("in here ok", renderingData);
                             for(var i = 0;i<dataArrayCount;i++){
 
                                 elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
@@ -467,8 +501,6 @@
                                 containerElementName.appendChild(element);
                             }
                         } else {
-
-
 
                             prototypeUTILS.log("I am in this instance... given an object", renderingData);
 
@@ -494,7 +526,7 @@
                         }
 
                     } else {
-                        prototypeUTILS.log("what the fuck am I dealing with here");
+                        // prototypeUTILS.log("what the fuck am I dealing with here");
                     }
 
                     return containerElementName;
@@ -536,7 +568,7 @@
         }
 
         if(createElementObj.length){
-            prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next");
+            // prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next");
             return null;
         }
 
@@ -569,7 +601,8 @@
     prototypeUTILS.extend({
         render : render
     },{
-        attributeMapping:{}
+        attributeMapping:{},
+        validPropertiesMapping:{}
     });
 
     return _this;

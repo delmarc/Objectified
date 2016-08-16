@@ -3,20 +3,15 @@ Objectified
 
 This is an attempt in order to get people thinking about templating differently... I mean lets be honest... the script tag being used the way it is with templates and such (while smart and understandable as to why it was done) is a hack...
 
-
-###### Objectified was started 12/27/13
-###### Current version - 0.7.5 - 7/8/14
-
+###### Old Objectified was ended 7/22/16
+###### Current Objectified was made master 7/22/16
+###### Current version - 0.9.0 - 7/22/16
 
 TODOS
 -----
 
-1. have to write it to work with all the different module types... I have only worked with browsers and straight node
-2. ~~properly deal with dataset property... that is easy... this will also be working on the style object as well...~~ I think i got this right
-3. do the same with classList property... pretty easy too...
-4. work with iterating through an array... thru binding the data...
-5. IE was working... until i did something... have to fix that...
-
+1. Get the Client based module working like it used to... rewrites suck like that
+2. Follow up with the Node based module after the Client version is cool
 
 Why???
 ------
@@ -29,26 +24,18 @@ Well here it is... This is me doing something about it...
 But still why???
 ----------------
 
-__Well__, there was a project that I had to start at work. Since I didnt want to use anything that already exists because I _partially_ hate them, this is what I did...
-
+I didn't like what I wrote before... it had the node handling and the client handling in the same code... not optimal... so did a module like pattern so we can build up exactly what we want and somewhat standardize what a module might look like but what it needs to play nice within this set way of doing things...
 
 Setup
 =====
 
-Umm... just do npm install... then do gulp... runs some tests while drawing a cat, then opens a server on 3001 and runs it... you can also run examples in node using the examples folder... so just go into that folder
-
-cd examples
-
-then run a js file like 
-
-node example.js or node example2.js
-
+Umm... just do npm install... then do npm start... and go to the examples folder and you'd get a idea of where I am going with this...
 
 
 Basic Examples
 ==============
 
-Objectified is nothing more then a template rendering engine if you will... it just returns documentfragments in which you can then append where ever you please... In a Node environment, I have lightly emulated the ability to create document fragments and elements... This is all done with JSON... so if you know how to properly build elements with javascript and understand the way it all works... This is nothing more then creating fragments or even whole documents with JSON...
+Objectified is nothing more then a template rendering engine if you will... it just returns documentFragments in which you can then append where ever you please... In a Node environment, I have lightly emulated the ability to create document fragments and elements... This is all done with JSON... so if you know how to properly build elements with javascript and understand the way it all works... This is nothing more then creating fragments or even whole documents with JSON...
 
 First Example
 -------------

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>Objectified Performance Tests</title>
-        <script src="../js/Objectified.js"></script>
+        <script src="../built/Objectified-client.min.js"></script>
 
         <!-- the competition -->
         <script src="competition/underscore-min.js"></script>
@@ -27,6 +27,19 @@
     	<div id="dropPoint"></div>
 
     	<script>
+        var O = Objectified.init({
+            "modulePropertiesObject":{
+                "render":{
+                    "attributeMapping":{
+                        "iH":"innerHTML",
+                        "c":"className",
+                        "i":"id",
+                        "S":"style"
+                    }
+                }
+            }
+        });
+
         function simpleTestWithInnerHTML(){
             var startTime, endTime, i,
                 cutOffNumber = 1000,
@@ -50,7 +63,7 @@
             // using Objectified
             startTime = new Date().getTime();
             for(i=0;i<cutOffNumber;i++){
-                instance = Objectified.render({tagName:"p",attributes:{innerHTML:"yea boy"}});
+                instance = O.render({tagName:"p",attributes:{innerHTML:"yea boy"}});
             }
             endTime = new Date().getTime();
             renderCycleObj.Objectified = {
@@ -157,7 +170,7 @@
             // using Objectified
             startTime = new Date().getTime();
             for(i=0;i<cutOffNumber;i++){
-                instance = Objectified.render({
+                instance = O.render({
                     tag:"ul",
                     dataBind: arrayForTest,
                     childrenDataHandling:{
@@ -286,7 +299,7 @@
             // using Objectified
             startTime = new Date().getTime();
             for(i=0;i<cutOffNumber;i++){
-                instance = Objectified.render({
+                instance = O.render({
                         tag:"div",
                         children:[{
                             tag:"h1",

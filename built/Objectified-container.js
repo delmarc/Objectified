@@ -9,43 +9,60 @@
 
     var globalRoot = this;
 
+    // this will be mapped to UTILS.error
     function throwOne(errorText){
 
         throw new Error(errorText);
 
     }
 
+    // this will be mapped to UTILS.log
     function objectifiedLog(){
 
         return console && console.log(arguments);
 
     }
 
+    // this will be mapped to UTILS.extend
     function extend(extendingObjectifiedObject, extendingObjectifiedModuleObject){
 
         var _self = this;
 
         for(var moduleName in extendingObjectifiedObject){
-            _self.prototype[moduleName] = function(){
-                var __module = this;
-                return function(){
-                    return extendingObjectifiedObject[moduleName].apply({
-                        moduleObject : __module.moduleObject,
-                        instancePropertyModuleObject : this.instancePropertyObject.modulePropertiesObject[moduleName],
-                        oPrototype : __module.oPrototype
-                    }, arguments);
-                };
-            }.call({
-                moduleObject : extendingObjectifiedModuleObject,
-                oPrototype : _self.prototype
+
+            _self.prototype[moduleName] = returnModulePropertyObj(extendingObjectifiedObject,moduleName).call({
+                "moduleObject" : extendingObjectifiedModuleObject,
+                "oPrototype" : _self.prototype
             });
+
         }
 
         return _self;
 
     }
 
-    function returnModulePropertyObj(){
+    function returnModulePropertyObj(extendingObjectifiedObject, moduleName){
+
+        // return crazy here...
+        return function(){
+
+            // this is what the call is regarding
+            var __module = this;
+
+            return function(){
+
+                // this is once its in the actual module itself..
+                var constructorSelf = this;
+
+                return extendingObjectifiedObject[moduleName].apply({
+                    "moduleObject" : __module.moduleObject,
+                    "instancePropertyModuleObject" : constructorSelf.instancePropertyObject.modulePropertiesObject[moduleName],
+                    "oPrototype" : __module.oPrototype
+                }, arguments);
+
+            };            
+
+        };
 
     }
 
@@ -75,10 +92,14 @@
 
     }
 
+    // This is what initializes an Objectified instance...
     ObjectifiedInstanceConstructor.init = function(objectifiedInstancePropertyObject){
+
         return new ObjectifiedInstanceConstructor(objectifiedInstancePropertyObject);
+
     };
 
+    // Objectified Utils setup...
     ObjectifiedInstanceConstructor.prototype.UTILS = {
         extend : function(){
             var ObjectifiedSelf = this;
@@ -86,12 +107,17 @@
                 return extend.call(ObjectifiedSelf, extendingObjectifiedObject, objectifiedModuleProperties);
             };
         }.call(ObjectifiedInstanceConstructor),
+        /*
+
+        I forgot why I was doing this one
         isSameDataType : function(){
             var ObjectifiedSelf = this;
             return function(expectedDataType, passedInDataType){
-                console.log(arguments)
+                objectifiedLog.apply(ObjectifiedSelf, arguments);
             };
         }.call(ObjectifiedInstanceConstructor),
+
+        */
         error : function(){
             var ObjectifiedSelf = this;
             return function(errorText){
@@ -106,20 +132,23 @@
         }.call(ObjectifiedInstanceConstructor)
     };
 
+    // Objectified itselfs properties...
     ObjectifiedInstanceConstructor.prototype.objectifiedProperties = {
-        baseVersion:"0.8.1",
-        atTheTime:{
-            song : "Bastard Child",
-            artist : "Master P"
+        "baseVersion":"0.9.0",
+        "atTheTime":{
+            "song" : "Bastard Child",
+            "artist" : "Master P"
         }
     };
 
     if (typeof exports !== "undefined") {
+        // rethink this... i dont like this
         if (typeof module !== "undefined" && module.exports) {
             exports = module.exports = ObjectifiedInstanceConstructor;
         }
         exports.Objectified = ObjectifiedInstanceConstructor;
     } else {
+        // just attach to the root object like window
         globalRoot.Objectified = ObjectifiedInstanceConstructor;
     }
 

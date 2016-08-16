@@ -4,6 +4,8 @@ var gulp = require('gulp'),
 // Lint JS
 gulp.task('lint', function() {
   return gulp.src('./dev/**/*.js')
-    .pipe(jshint())
+    .pipe(jshint({
+    	validthis:true
+    }))
     .pipe(jshint.reporter('default'));
 });
