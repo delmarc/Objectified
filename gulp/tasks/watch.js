@@ -10,14 +10,14 @@ gulp.task('watch', function() {
 	//gulp.watch('./tests/*.js', ['mocha']);
 	gulp.watch(['./dev/*.js', './dev/modules/*.js'], [
 		'objectifiedContainer',
-		'objectifiedAll',
+		// 'objectifiedAll',
 		'objectifiedClientOnly',
-		'objectifiedNodeOnly',
+		// 'objectifiedNodeOnly',
 
 		'objectifiedContainerMin',
-		'objectifiedAllMin',
+		// 'objectifiedAllMin',
 		'objectifiedClientOnlyMin',
-		'objectifiedNodeOnlyMin',
+		// 'objectifiedNodeOnlyMin',
 
 		'lint'
 		//'mocha'

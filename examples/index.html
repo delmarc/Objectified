@@ -11,10 +11,14 @@
         var O = Objectified.init({
             "modulePropertiesObject":{
                 "render":{
-                    "validPropertiesMapping":{
-                        "tagName":"TN"
+                    "renderObjectPropertyMappingObject":{
+                        "TN":"tagName",
+                        "D":"children",
+                        "A":"attributes",
+                        "DD":"childrenDOM",
+                        "DTD":"childrenData"
                     },
-                    "attributeMapping":{
+                    "domAttributeMappingObject":{
                         "iH":"innerHTML",
                         "c":"className",
                         "i":"id",
@@ -24,40 +28,70 @@
             }
         });
 
-        var OH = Objectified.init({
-            "modulePropertiesObject":{
-                "render":{
-                    "attributeMapping":{
-                        "iH":"innerHTML"
-                    }
-                }
-            }
-        });
-
-        console.log(O.render({
-            "tagName":"header",
-            "attributes":{
+        document.body.appendChild(O.render({
+            "TN":"header",
+            "A":{
                 "c":"someClass",
                 "i":"header",
-                "iH":"INNER STUFF",
+                "iH":["inner"],
                 "S":{
-                    "border":"1px solid #ff0000"
+                    "border":"1px solid #ff0000",
+                    "display":"inline"
                 }
+            },
+            "D":[{
+                    "TN":"div",
+                    "A":{
+                        "iH":"some content"
+                    },
+                    "D":[{
+                        "TN":"p",
+                        "A":{
+                            "i":"childsChild",
+                            "iH":["headerContent","nogo"]
+                        }
+                    },{
+                        "TN":"ul",
+                        "A":{
+                            "i":"headerList"
+                        },
+                        "DD":{
+                            "TN":"li",
+                            "A":{
+                                "c":"list_item",
+                                "iH":[]
+                            }
+                        },
+                        "DTD":["list"]
+                    }]
+                },{
+                    "TN":"p",
+                    "A":{
+                        "i":"para",
+                        "iH":["headerContent","ok"]
+                    }
+                },{
+                    "TN":"p",
+                    "A":{
+                        "i":"grapg",
+                        "iH":["headerContent","pop","dop",1]
+                    }
+            }]
+        },{
+            "inner":"Yea Boy",
+            "list":["1","a"],
+            "headerContent":{
+                "ok":"thisone",
+                "pop":{
+                    "dop":{
+                        1:123
+                    }
+                },
+                "nogo":"thatone"
             }
         }));
 
-        console.log(OH.render({
-            "tagName":"article",
-            "attributes":{
-                "className":"anotherClass",
-                "id":"mofo",
-                "iH":"ARTICLE STUFF",
-                "style":{
-                    "border":"1px solid #ff00ff"
-                }
-            }
-        }));
-
+        /*
         console.log(O.render({
             "tagName":"header",
             "attributes":{
@@ -104,7 +138,7 @@
                 "text":"yea boy"
             }
         }));
-
+        */
     	</script>
 
     </body>

@@ -10,16 +10,15 @@
 
     var _this = this,
         doc,
-        listOfValidProperties = {
-            "tag":1,
-            "tagName":1,
-            "nodeName":1,
-            "childNodes":1,
-            "children":1,
-            "attributes":1
+        renderObjectBasePropertiesMappingObject = {
+            "tagName":"tagName",
+            "childNodes":"childNodes",
+            "children":"children",
+            "dataBindedAttributes":"dataBindedAttributes",
+            "attributes":"attributes"
         },
         prototypeUTILS = _this.prototype.UTILS;
-// 
+
     // if its null then something aint right
     if(_this === null){
         return false;
@@ -40,121 +39,155 @@
     }
 
     /**
-    * The method in which extends on DOM elements' attributes...
-    * @method extendElement
-    * @param {Object} REQUIRED - This is the object that you want to use to extend the context's attribute
-    * @return {Object}
-    */
-    function extendElement (elementToExtend, elementAttributesObj, elementBindedDataAttributesObj){
-        /*
-           so with this I am basically maping what the context of the function is... normally or more what i consider
-           normally is that this function will be executed like below
-
-           Objectified.extendElement.call(context, elementAttributesObj)
-        */
-
-        var __this = this,
-            extendElement,
-            attributeMappingObj = __this.instancePropertyModuleObject && !!__this.instancePropertyModuleObject.attributeMapping ? __this.instancePropertyModuleObject.attributeMapping : null,
-            utilizeMapping = !!attributeMappingObj,
-            attrInstance;
-
-        // cycle through all the attributes of passed objects
-        for(var attr in elementAttributesObj){
-
-            if( utilizeMapping && attributeMappingObj[attr] ){
-                attrInstance = attributeMappingObj[attr];
-            } else {
-                attrInstance = attr;
-            }
-
-            // checking if the attr in question is a normal attribute of said DOM element...
-            if( elementToExtend.hasOwnProperty(attrInstance) || attrInstance in elementToExtend ){
-                // yea??? then add through usual conventions on the DOM...
-
-                switch(attrInstance){
-                    case "style":
-                    case "dataset":
-                        /*
-                            I have this in a switch cause where I work at we depend on a polyfill to do
-                            dataset and classList for us... I will write this myself
-                        */
-                        for(var singleAttr in elementAttributesObj[attr]){
-                            elementToExtend[attrInstance][singleAttr] = utilizeMapping ? elementAttributesObj[attr][singleAttr] : elementAttributesObj[attr][singleAttr];
-                        }
-                        break;
-                    case "innerHTML":
-                        /*
-                            I have this in a switch cause where I work at we depend on a polyfill to do
-                            dataset and classList for us... I will write this myself
-                        */
-                        elementToExtend.innerHTML = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
-                        break;
-                    default:
-                        // use the normal attribute and assign the attribute to it... example element.title or element.href
-                        elementToExtend[attrInstance] = utilizeMapping ? elementAttributesObj[attr] : elementAttributesObj[attrInstance];
-                }
-
-            } else {
-
-                // this is when a custom attribute is passed to the specific element
-                elementToExtend.setAttribute( ( utilizeMapping ? attributeMappingObj[attr] : attr ), elementAttributesObj[attr] );
-
-            }
-
-        }
-
-    }
-
-
-    /**
     * The method that takes the data and maps it to the attributes that will then be used in the extendElements Obj
     * @method bindAttributes
     * @param {Object}
     * @return {Object}
     */
 
-    function bindAttributes(elementBaseAttributesObject, dataBindingObj, dataToBindRender){
-        var _this = this,
-            attributeMappingObj = _this.instancePropertyModuleObject.attributeMapping;
+    function bindAttributes(
+        createElementObject, 
+        dataObjectToRender
+    ) {
 
-        switch(typeof dataToBindRender){
-            case "string":
-                //prototypeUTILS.log("binding from a string");
-                for(var stringBindingObjProps in dataBindingObj){
-                    elementBaseAttributesObject[stringBindingObjProps] = dataToBindRender;
-                }
-                break;
-            case "object":
-                //prototypeUTILS.log("binding from a Object");
-                if(dataToBindRender.length){
-                    // prototypeUTILS.log("binding from a Object array", dataBindingObj, dataToBindRender);
+        var _objectified = this,
+            domAttributeMappingObject = _objectified && _objectified.instancePropertyModuleObject && _objectified.instancePropertyModuleObject.domAttributeMappingObject,
+            createElementObjectAttributes = createElementObject.attributes;
 
+        // there is no else... this is a straight render apparently
+
+        if(!!domAttributeMappingObject){
+            for(var domAttribute in createElementObjectAttributes){
+                if(typeof createElementObjectAttributes[domAttribute] === "object" && typeof createElementObjectAttributes[domAttribute].length === "number"){
+                    createElementObjectAttributes[domAttributeMappingObject[domAttribute]] = retrieveData.call(_this, createElementObjectAttributes[domAttribute], dataObjectToRender);
                 } else {
-                    // prototypeUTILS.log("binding from more proper Object", dataBindingObj, dataToBindRender);
-
-                    // prototypeUTILS.log("I need to check mapping",attributeMappingObj);
-
-                    for(var objectBindingObjProps in dataBindingObj){
-                        var referenceObj = dataToBindRender,
-                            accessArray = dataBindingObj[objectBindingObjProps],
-                            accessArrayLength = accessArray.length;
-
-                        for(var j = 0;j<accessArrayLength;j++){
-                            referenceObj = referenceObj[accessArray.shift()];
-                        }
-
-                        elementBaseAttributesObject[objectBindingObjProps] = referenceObj;
-                    }
-
+                    createElementObjectAttributes[domAttributeMappingObject[domAttribute]] = createElementObjectAttributes[domAttribute];
                 }
 
-                break;
+                delete createElementObjectAttributes[domAttribute];
+            }
         }
 
-        return elementBaseAttributesObject;
+        return createElementObject;
 
     }
+
+
+    /**
+    * 
+    * @method retrieveData
+    * @param {Object}
+    * @return {Object}
+    */
+
+    function retrieveData(
+        attributeValueToRetrieveArray,
+        dataObjectToRender
+    ) {
+        var _objectified = this,
+            referenceToDataObject;
+
+        console.log(attributeValueToRetrieveArray, dataObjectToRender, attributeValueToRetrieveArray.length);
+
+        for(var i=0;i<attributeValueToRetrieveArray.length;i++){
+            if(i){
+                // use itself to loop inside again and again
+                referenceToDataObject = referenceToDataObject[attributeValueToRetrieveArray[i]];
+            } else {
+                // setup the reference Object
+                referenceToDataObject = dataObjectToRender[attributeValueToRetrieveArray[i]];
+            }
+        }
+
+        return referenceToDataObject;
+
+    }
+
+
+    /**
+    * 
+    * @method bindProperties
+    * @param {Object}
+    * @return {Object}
+    */
+
+    function bindProperties(
+        createElementObject, 
+        dataObjectToRender,
+        internalBindingBoolean
+    ) {
+
+        var _objectified = this,
+            renderObjectPropertyMappingObject,
+            bindedElementObject;
+
+        /* 
+            look if we have a mapping object that was passed into this instance
+        */
+        renderObjectPropertyMappingObject = !internalBindingBoolean && _objectified && _objectified.instancePropertyModuleObject && _objectified.instancePropertyModuleObject.renderObjectPropertyMappingObject;
+
+        if(renderObjectPropertyMappingObject){
+            /* 
+                if we have an instance then lets loop through it in order
+                to remap/rename the createElementObjects property names
+            */
+            for(var renderObjectProperty in renderObjectPropertyMappingObject){
+                createElementObject[renderObjectPropertyMappingObject[renderObjectProperty]] = createElementObject[renderObjectProperty];
+                delete createElementObject[renderObjectProperty];
+            }
+        }
+
+        return bindAttributes.call(_objectified, createElementObject, dataObjectToRender, renderObjectPropertyMappingObject);
+
+    }
+
+
+    /**
+    * 
+    * @method extendElementAttributes
+    * @param {Object}
+    * @return {Object}
+    */
+
+    function extendElementAttributes(
+        createElementAttributesObject,
+        dataObjectToRender
+    ) {
+        var elementSelf = this;
+
+        for(var attribute in createElementAttributesObject){
+
+            switch(attribute){
+                case "style":
+                case "dataset":
+                    for(var subAttribute in createElementAttributesObject[attribute]){
+                        elementSelf[attribute][subAttribute] = createElementAttributesObject[attribute][subAttribute];
+                    }
+                    break;
+                default:
+                    if( attribute in elementSelf || elementSelf.hasOwnProperty(attribute) ){
+                        elementSelf[attribute] = createElementAttributesObject[attribute];
+                    } else {
+
+                        // old browsers fall in here
+                        switch(attribute){
+                            case "innerHTML":
+                                elementSelf[attribute] = createElementAttributesObject[attribute];
+                                break;
+                            case "className":
+                                elementSelf.setAttribute("class", createElementAttributesObject[attribute]);
+                                break;
+                            default:
+                                elementSelf.setAttribute(attribute, createElementAttributesObject[attribute]);
+                        }
+
+                    }
+            }
+
+        }
+
+    }
+
 
 
     /**
@@ -164,223 +197,75 @@
     * @param {Object} REQUIRED - The desired DOM element with tagName and optional attributes and childNodes/children
     * @return {Object}
     */
-    function createElement (createElementObj, renderingData) {
-        // prototypeUTILS.log(createElementObj, renderingData, "BEGINNING");
+    function createElement (
+        createElementObject,
+        dataObjectToRender,
+        childrenDataObject
+    ) {
+        // prototypeUTILS.log(createElementObj, dataObjectToRender, "BEGINNING");
 
-        var _objectified = this,
-            validPropertiesMappingObj = _objectified.instancePropertyModuleObject && !!_objectified.instancePropertyModuleObject.validPropertiesMapping ? _objectified.instancePropertyModuleObject.validPropertiesMapping : null,
-            utilizeValidPropertiesMapping = !!validPropertiesMappingObj;
+        var _objectified = this;
 
-        if(typeof createElementObj === "object"){
+        if(typeof createElementObject === "object"){
 
-            if(createElementObj.length){
-                // prototypeUTILS.log("I get createElementObj as an array");
+            if(childrenDataObject){
+                console.log(createElementObject, dataObjectToRender, childrenDataObject)
+            }
 
-                if(renderingData){
+            // prototypeUTILS.log("I get createElementObj as an object", createElementObj);
 
-                    // prototypeUTILS.log("do something with this", createElementObj, renderingData);
+            var element,
+                elementTagName,
+                childInstance,
+                children,
+                childrenDOM;
 
-                    return document.createTextNode();
+            if(elementTagName = createElementObject.tagName) {
 
-                } else {
-                    // odds is you gave me an array but didnt give me the data to parse through... and I dont want those...
-                    return prototypeUTILS.error("This is an object with a length attribute aka most likely an array and I dont want those...");
+                //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
+                element = doc.createElement(elementTagName || "div");
 
+                // put the attribute/properties on the object
+                extendElementAttributes.call(element, createElementObject.attributes, dataObjectToRender, childrenDataObject);
+
+                // cycle through the children object(s) now
+                if(children = createElementObject.children){
+                    for(childInstance=0;childInstance<children.length;childInstance++){
+                        element.appendChild( 
+                            createElement.call(
+                                _objectified,
+                                bindProperties.call(
+                                    _objectified,
+                                    children[childInstance],
+                                    dataObjectToRender
+                                ),
+                                dataObjectToRender,
+                                childrenDataObject
+                            )
+                        )
+                    }
                 }
 
-            } else {
-
-                // prototypeUTILS.log("I get createElementObj as an object", createElementObj);
-
-                var element,
-                    elementName,
-                    containerElementName,
-                    children,
-                    nodeText;
-
-                if(!renderingData){
-
-                    //prototypeUTILS.log(createElementObj, renderingData)
-
-                    if(createElementObj.nodeType && createElementObj.nodeType !== 1){
-
-                        switch(createElementObj.nodeType){
-                            case 3: // textNode
-                                if( (nodeText = createElementObj.text) && typeof createElementObj.text === "string" ){
-                                    element = doc.createTextNode(nodeText);
-                                } else {
-                                    return prototypeUTILS.error("You specified a text node but you didnt give me a string for the text");
-                                }
-                                break;
-                            /*
-                            working on this
-                            case 8: // comment
-                                if(nodeText = createElementObj.commentText || createElementObj.text){
-                                    element = document.createComment(nodeText);
-                                } else {
-                                    return prototypeUTILS.error("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
-                                }
-                                break;
-                            case 2: // attribute
-                                break;
-                            case 11: // docFrag
-                                element = createDocumentFragment();
-                                break;
-                            */
-                        }
-
-                    } else if(createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) {
-
-                        elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
-
-                        if(typeof elementName !== "string" && elementName !== undefined){
-                            return prototypeUTILS.error("You tried making an element with a tag/nodeName that was not a string... what the hell am I supposed to do with this...");
-                        }
-
-                        //  nodeName??? yes that does exist... but please use tagName there are differences otherwise if all those arent defined just make a div
-                        element = doc.createElement(elementName || "div");
-
-                        //  if createElementObj exists the call extend with the element as the this
-                        createElementObj.attributes && extendElement.call(_objectified, element, createElementObj.attributes);
-
-                        /*
-                            if you have children (you can call then childNodes or children) loops through them and append each one to the
-                            created element in question...
-                        */
-
-                        // prototypeUTILS.log(createElementObj);
-
-                        if(children = createElementObj.childNodes || createElementObj.children){
-                            prototypeUTILS.log("got kids here", children);
-                            //  and since we do, cache the object
-                            if(children.length){
-                                for(var i=0;i<children.length;i++){
-                                    /*
-                                        cycle through the children and recursively call createElement on those child nodes which can go
-                                        forever and ever and ever and ever...
-                                    */
-                                    element.appendChild( createElement(children[i]) );
-                                }
-                            }
-
-                        } else if(createElementObj.childrenDataHandling){
-                            // prototypeUTILS.log("hey mommy in this instance", createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData);
-
-                            if(createElementObj.childrenDataHandling.length){
-                                // prototypeUTILS.log("up in here");
-                                for(var i=0;i<createElementObj.childrenDataHandling.length;i++){
-                                    prototypeUTILS.log(createElementObj.childrenDataHandling[i]);
-                                }
-                                element.appendChild( createElement(createElementObj.childrenDataHandling, createElementObj.dataBind || renderingData) );
-                            } else {
-                                var dataToLoop = createElementObj.dataBind || renderingData,
-                                    instanceElement,
-                                    instanceDataBinded;
-
-                                // prototypeUTILS.log("fall into here", createElementObj, dataToLoop);
-
-                                instanceDataBinded = createElementObj.childrenDataHandling.dataBindedAttributes && bindAttributes.call({}, createElementObj.childrenDataHandling.dataBindedAttributes, dataToLoop);
-
-                                for(var i in instanceDataBinded){
-
-                                    for(var j=0;j<instanceDataBinded[i].length;j++){
-
-                                        var childElement = doc.createElement(createElementObj.childrenDataHandling.tagName || createElementObj.childrenDataHandling.tag || createElementObj.childrenDataHandling.nodeName || "div");
-
-                                        if(createElementObj.childrenDataHandling.dataBindedAttributes){
-                                            if(!createElementObj.childrenDataHandling.attributes){
-                                                createElementObj.childrenDataHandling.attributes = {};
-                                            }
-                                        }
-
-                                        createElementObj.childrenDataHandling.attributes && extendElement.call(childElement, createElementObj.childrenDataHandling.attributes);
-
-                                        childElement[i] = instanceDataBinded[i][j];
-
-                                        element.appendChild( childElement );
-
-                                    }
-
-                                }
-
-                            }
-                        }
-
-                    }
-
-                    return element;
-
-                } else {
-
-                    var dataArrayCount;
-
-                    prototypeUTILS.log("Now in this one ", createElementObj, renderingData);
-
-                    containerElementName = createDocumentFragment();
-
-                    // i have the data
-                    if(typeof renderingData === "object"){
-
-                        if( dataArrayCount = renderingData.length){
-
-                            // prototypeUTILS.log("in here ok", renderingData);
-                            for(var i = 0;i<dataArrayCount;i++){
-
-                                elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
-
-                                element = doc.createElement(elementName || "div");
-                                
-                                if(createElementObj.dataBindedAttributes){
-                                    if(!createElementObj.attributes){
-                                        createElementObj.attributes = {};
-                                    }
-
-                                    createElementObj.dataBindedAttributes && bindAttributes.call(createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData[i]); 
-                                }
-
-                                createElementObj.attributes && extendElement.call(element, createElementObj.attributes);
-
-                                containerElementName.appendChild(element);
-                            }
-                        } else {
-
-                            prototypeUTILS.log("I am in this instance... given an object", renderingData);
-
-                            elementName = createElementObj.tagName || createElementObj.tag || createElementObj.nodeName;
-
-                            element = doc.createElement(
-                                (createElementObj.tagName || createElementObj.tag || createElementObj.nodeName) ||
-                                "div"
-                            );
-
-                            if(createElementObj.dataBindedAttributes){
-                                if(!createElementObj.attributes){
-                                    createElementObj.attributes = {};
-                                }
-
-                                createElementObj.dataBindedAttributes && bindAttributes.call(_objectified, createElementObj.attributes, createElementObj.dataBindedAttributes, renderingData); 
-                            }
-
-                            createElementObj.attributes && extendElement.call(_objectified, element, createElementObj.attributes);
-
-                            containerElementName.appendChild(element);
-
-                        }
-
-                    } else {
-                        // prototypeUTILS.log("what the fuck am I dealing with here");
-                    }
-
-                    return containerElementName;
-
+                // cycle through the children object(s) now
+                if(childrenDOM = createElementObject.childrenDOM){
+                    console.log(childrenDOM);
+                    element.appendChild(
+                        createElement.call(
+                            _objectified,
+                            bindProperties.call(
+                                _objectified,
+                                childrenDOM,
+                                dataObjectToRender
+                            ),
+                            dataObjectToRender,
+                            createElementObject.childrenData || undefined
+                        )
+                    )
                 }
 
             }
 
-        } else {
-
-            // i will just fail if you dont use the api correctly
-            return prototypeUTILS.error("The first argument should be an object... you passed me "+createElementObj+" which is a "+(typeof createElementObj)+"... I dont want that...");
+            return element;
 
         }
 
@@ -394,57 +279,49 @@
     * @param {Object} REQUIRED - You wil pass an object that will hopefully look like a JSON representation of a DOM
     * @return {Object}
     */
-    function render (createElementObj, dataObjToRender) {
+    function render (
+        createElementObject,
+        dataObjectToRender
+    ) {
 
-        var propsMethodsExist = false,
-            validPropertiesExist = false,
-            containerFragment,
+        var objectPropsMethodsExist = false,
             _objectified = this;
 
-        if(!createElementObj){
+        if(!createElementObject){
             return prototypeUTILS.error("I think it would be good to at least give me an object to start with - err-0");
         }
 
-        if(typeof createElementObj !== "object" || typeof createElementObj.length === "number" ){
+        if(typeof createElementObject !== "object" || typeof createElementObject.length === "number" ){
             return prototypeUTILS.error("You either gave me something that is not an object like i am expecting, or probably an array");
         }
 
-        if(createElementObj.length){
-            // prototypeUTILS.log("have to be able to have createElementObj be an array to... this is next");
-            return null;
+        for(var i in createElementObject){
+            objectPropsMethodsExist = true;
         }
 
-        for(var i in createElementObj){
-            propsMethodsExist = true;
-
-            if(listOfValidProperties[i]){
-                validPropertiesExist = true;
-                break;
-            }
-
-        }
-
-        if(!propsMethodsExist){
+        if(!objectPropsMethodsExist){
             return prototypeUTILS.error("Well thats nice you gave me an empty object... what you want me to do with it...");
         }
 
-        if(!validPropertiesExist){
-            return prototypeUTILS.error("Well you gave me an object... thats cool but there is really nothing I can do with this...");
-        }
-
-        containerFragment = createDocumentFragment();
-
-        containerFragment.appendChild( createElement.call(_objectified, createElementObj, dataObjToRender) );
-
-        return containerFragment;
+        return createDocumentFragment().appendChild(
+            createElement.call(
+                _objectified,
+                bindProperties.call(
+                    _objectified,
+                    createElementObject,
+                    dataObjectToRender
+                ),
+                dataObjectToRender
+            ) 
+        );
 
     }
 
     prototypeUTILS.extend({
         render : render
     },{
-        attributeMapping:{},
-        validPropertiesMapping:{}
+        domAttributeMappingObject : {},
+        renderObjectPropertyMappingObject : {}
     });
 
     return _this;

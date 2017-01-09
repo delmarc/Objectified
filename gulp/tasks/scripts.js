@@ -39,7 +39,7 @@ gulp.task('objectifiedClientOnlyMin', function() {
 		.pipe(gulp.dest('./built/'));
 });
 
-
+/*
 // This is just for the node environments
 gulp.task('objectifiedNodeOnly', function() {
 	return gulp.src([
@@ -59,7 +59,6 @@ gulp.task('objectifiedNodeOnlyMin', function() {
 		.pipe(uglify())
 		.pipe(gulp.dest('./built/'));
 });
-
 
 // for both node and client
 gulp.task('objectifiedAll', function() {
@@ -82,4 +81,5 @@ gulp.task('objectifiedAllMin', function() {
 		.pipe(uglify())
 		.pipe(gulp.dest('./built/'));
 });
+*/
 

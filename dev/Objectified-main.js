@@ -107,7 +107,28 @@
                 return extend.call(ObjectifiedSelf, extendingObjectifiedObject, objectifiedModuleProperties);
             };
         }.call(ObjectifiedInstanceConstructor),
+
         /*
+        ObjectifiedWorker : function(workerObj, stayOpenBool){
+            //myWorker.terminate();
+            //close inside code;
+            var ObjectifiedSelf = this,
+                objectifiedBlob = new Blob([
+    "onmessage = function(ObjectifiedMessageObject){postMessage(ObjectifiedMessageObject.data.callback(ObjectifiedMessageObject.data.dataToProcess));}"]);
+
+            var blobURL = window.URL.createObjectURL(blob);                
+            var worker = new Worker(blobURL);
+
+            worker.onmessage = function(e) {
+              // e.data == 'msg from worker'
+            };
+            worker.postMessage(); // Start the worker.
+
+            return function(extendingObjectifiedObject, objectifiedModuleProperties){
+                return extend.call(ObjectifiedSelf, extendingObjectifiedObject, objectifiedModuleProperties);
+            };
+        }.call(ObjectifiedInstanceConstructor),
+        *
 
         I forgot why I was doing this one
         isSameDataType : function(){

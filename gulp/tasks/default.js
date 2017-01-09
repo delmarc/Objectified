@@ -2,14 +2,14 @@ var gulp = require('gulp');
 
 gulp.task('default', [
 	'objectifiedContainer',
-	'objectifiedAll',
+	// 'objectifiedAll',
 	'objectifiedClientOnly',
-	'objectifiedNodeOnly',
+	// 'objectifiedNodeOnly',
 
 	'objectifiedContainerMin',
-	'objectifiedAllMin',
+	// 'objectifiedAllMin',
 	'objectifiedClientOnlyMin',
-	'objectifiedNodeOnlyMin',
+	// 'objectifiedNodeOnlyMin',
 
 	'lint',
 	'serve',
