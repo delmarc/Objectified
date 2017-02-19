@@ -17,6 +17,7 @@
             "dataBindedAttributes":"dataBindedAttributes",
             "attributes":"attributes"
         },
+        swapSpace = null,
         prototypeUTILS = _this.prototype.UTILS;
 
     // if its null then something aint right
@@ -87,7 +88,7 @@
         var _objectified = this,
             referenceToDataObject;
 
-        console.log(attributeValueToRetrieveArray, dataObjectToRender, attributeValueToRetrieveArray.length);
+        // console.log("retrieveData", attributeValueToRetrieveArray, dataObjectToRender);
 
         for(var i=0;i<attributeValueToRetrieveArray.length;i++){
             if(i){
@@ -99,7 +100,7 @@
             }
         }
 
-        return referenceToDataObject;
+        return referenceToDataObject || attributeValueToRetrieveArray;
 
     }
 
@@ -132,8 +133,12 @@
                 to remap/rename the createElementObjects property names
             */
             for(var renderObjectProperty in renderObjectPropertyMappingObject){
-                createElementObject[renderObjectPropertyMappingObject[renderObjectProperty]] = createElementObject[renderObjectProperty];
-                delete createElementObject[renderObjectProperty];
+                if(renderObjectProperty in createElementObject){
+                    createElementObject[renderObjectPropertyMappingObject[renderObjectProperty]] = createElementObject[renderObjectProperty];
+                    delete createElementObject[renderObjectProperty];
+                } else {
+                    // do as normal here...
+                }
             }
         }
 
@@ -150,35 +155,45 @@
     */
 
     function extendElementAttributes(
+        element,
         createElementAttributesObject,
-        dataObjectToRender
+        dataObjectToRender,
+        childrenDataObject
     ) {
-        var elementSelf = this;
+        var _objectified = this,
+            utilizeChildrenDataObject = !!childrenDataObject,
+            retrievedData;
 
         for(var attribute in createElementAttributesObject){
+            if(utilizeChildrenDataObject){
+                // retrievedData = retrieveData.call(_this, createElementObjectAttributes[domAttribute], dataObjectToRender);
+                console.log("retrieveData", attribute, createElementAttributesObject, element, childrenDataObject, dataObjectToRender, retrieveData.call(_this, childrenDataObject, dataObjectToRender));
+            }
+
+            //retrieveData.call(_this, createElementObjectAttributes[domAttribute], dataObjectToRender);
 
             switch(attribute){
                 case "style":
                 case "dataset":
                     for(var subAttribute in createElementAttributesObject[attribute]){
-                        elementSelf[attribute][subAttribute] = createElementAttributesObject[attribute][subAttribute];
+                        element[attribute][subAttribute] = createElementAttributesObject[attribute][subAttribute];
                     }
                     break;
                 default:
-                    if( attribute in elementSelf || elementSelf.hasOwnProperty(attribute) ){
-                        elementSelf[attribute] = createElementAttributesObject[attribute];
+                    if( attribute in element || element.hasOwnProperty(attribute) ){
+                        // console.log("INNERHTML",attribute,createElementAttributesObject[attribute]);
+                        element[attribute] = createElementAttributesObject[attribute];
                     } else {
-
                         // old browsers fall in here
                         switch(attribute){
                             case "innerHTML":
-                                elementSelf[attribute] = createElementAttributesObject[attribute];
+                                element[attribute] = createElementAttributesObject[attribute];
                                 break;
                             case "className":
-                                elementSelf.setAttribute("class", createElementAttributesObject[attribute]);
+                                element.setAttribute("class", createElementAttributesObject[attribute]);
                                 break;
                             default:
-                                elementSelf.setAttribute(attribute, createElementAttributesObject[attribute]);
+                                element.setAttribute(attribute, createElementAttributesObject[attribute]);
                         }
 
                     }
@@ -200,7 +215,8 @@
     function createElement (
         createElementObject,
         dataObjectToRender,
-        childrenDataObject
+        childrenDataObject,
+        localSwapSpace
     ) {
         // prototypeUTILS.log(createElementObj, dataObjectToRender, "BEGINNING");
 
@@ -208,17 +224,21 @@
 
         if(typeof createElementObject === "object"){
 
-            if(childrenDataObject){
-                console.log(createElementObject, dataObjectToRender, childrenDataObject)
+            if(childrenDataObject || createElementObject.childrenData){
+                swapSpace = childrenDataObject || createElementObject.childrenData;
             }
 
             // prototypeUTILS.log("I get createElementObj as an object", createElementObj);
 
             var element,
                 elementTagName,
+                bindInstance,
                 childInstance,
                 children,
-                childrenDOM;
+                childrenDOM,
+                swapChildrenDOM,
+                swapData,
+                swapInstance;
 
             if(elementTagName = createElementObject.tagName) {
 
@@ -226,41 +246,57 @@
                 element = doc.createElement(elementTagName || "div");
 
                 // put the attribute/properties on the object
-                extendElementAttributes.call(element, createElementObject.attributes, dataObjectToRender, childrenDataObject);
+                extendElementAttributes.call(_objectified, element, createElementObject.attributes, dataObjectToRender, childrenDataObject);
 
                 // cycle through the children object(s) now
                 if(children = createElementObject.children){
                     for(childInstance=0;childInstance<children.length;childInstance++){
+                        bindInstance = bindProperties.call(
+                            _objectified,
+                            children[childInstance],
+                            dataObjectToRender
+                        );
+
                         element.appendChild( 
                             createElement.call(
                                 _objectified,
-                                bindProperties.call(
-                                    _objectified,
-                                    children[childInstance],
-                                    dataObjectToRender
-                                ),
+                                bindInstance,
                                 dataObjectToRender,
                                 childrenDataObject
                             )
-                        )
+                        );
                     }
                 }
 
                 // cycle through the children object(s) now
                 if(childrenDOM = createElementObject.childrenDOM){
-                    console.log(childrenDOM);
-                    element.appendChild(
-                        createElement.call(
+                    if(swapSpace && typeof swapSpace.length === "number"){
+                        swapData = retrieveData.call(_this, swapSpace, dataObjectToRender);
+
+                        if(!localSwapSpace){
+                            swapChildrenDOM = childrenDOM;
+                            localSwapSpace = swapChildrenDOM;
+                        }
+
+                        bindInstance = bindProperties.call(
                             _objectified,
-                            bindProperties.call(
-                                _objectified,
-                                childrenDOM,
-                                dataObjectToRender
-                            ),
-                            dataObjectToRender,
-                            createElementObject.childrenData || undefined
-                        )
-                    )
+                            localSwapSpace,
+                            dataObjectToRender
+                        );
+
+                        for(swapInstance=0;swapInstance<swapData.length;swapInstance++){
+
+                            element.appendChild(
+                                createElement.call(
+                                    _objectified,
+                                    bindInstance,
+                                    dataObjectToRender,
+                                    localSwapSpace
+                                )
+                            );
+
+                        }
+                    }
                 }
 
             }
