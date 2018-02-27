@@ -1,3 +1,6 @@
+# Changed Direction with this framework... now resides at https://github.com/ObjectifiedJS... not maintaining this and part of the redo branch will become the baseline of Objectified Core  
+
+
 Objectified
 ===========
 
